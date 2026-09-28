@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timwork Sports</title>
+  <meta name="description" content="Timwork Sports — upcoming events, coaches, athlete rankings, and partner ads from the Crested Pass app.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    try {
+      const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
+      if (!gate || !gate.email) location.replace("index.html");
+    } catch (error) {
+      location.replace("index.html");
+    }
+  </script>
+  <style>
+    :root {
+      --green: #0c3d2e;
+      --green-dark: #07261c;
+      --green-soft: #e7f2ec;
+      --ink: #0a0a0a;
+      --gold: var(--green);
+      --navy: var(--green);
+      --sage: #9dceba;
+      --muted: #6d726e;
+      --line: #eceeed;
+      --soft: #f4f6f5;
+      --gutter: clamp(20px, 3vw, 48px);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.5;
+      width: 100%;
+      overflow-x: clip;
+    }
+    img { max-width: 100%; display: block; }
+    button, input, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+    .frame {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet {
+      background: #fff;
+      border-radius: 0;
+      width: 100%;
+      padding: 8px var(--gutter) 64px;
+    }
+    .nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      min-height: 64px;
+      position: relative;
+    }
+    .nav-left, .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-right { justify-content: flex-end; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.04em; font-size: 22px; }
+    .brand small { font-size: 11px; letter-spacing: 0.14em; font-weight: 700; color: var(--green); }
+    .pill, .btn {
+      border: 0;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .pill { background: #f3f5f4; color: var(--ink); }
+    .pill.on, .sport-tab.on { background: var(--green); color: #fff; }
+    .icon-btn {
+      width: 42px; height: 42px; border-radius: 50%; border: 0; background: #f3f5f4;
+      display: grid; place-items: center;
+    }
+    .linkish { background: transparent; border: 0; font-weight: 600; font-size: 14px; padding: 10px 8px; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover { background: var(--green-dark); }
+    .btn-light { background: #fff; color: var(--ink); }
+    .btn-dark { background: var(--ink); color: #fff; }
+    .menu {
+      display: none;
+      position: absolute;
+      top: 68px;
+      left: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 8px;
+      min-width: 220px;
+      box-shadow: 0 10px 30px rgba(18, 40, 28, 0.08);
+      z-index: 5;
+    }
+    .menu.open { display: grid; }
+    .menu a, .menu button { padding: 12px 14px; border-radius: 12px; font-weight: 600; text-align: left; background: transparent; border: 0; }
+    .menu a:hover, .menu button:hover { background: var(--soft); }
+    #who { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hero { display: grid; grid-template-columns: 0.86fr 1.28fr; gap: 14px; margin-top: 8px; }
+    .hero-copy {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 28px;
+      min-height: 360px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .hero-copy h1 {
+      margin: 0;
+      font-size: clamp(36px, 4vw, 52px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      font-weight: 700;
+      max-width: 10ch;
+      position: relative;
+      z-index: 1;
+    }
+    .kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); margin: 0 0 10px; }
+    .hero-copy .kicker { color: #fff; }
+    .ball { position: absolute; width: 148px; height: 148px; right: -36px; bottom: -42px; }
+    .hero-photo {
+      border-radius: 28px;
+      min-height: 360px;
+      background: #1b1b1b center/cover no-repeat;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      display: flex;
+      align-items: flex-end;
+      padding: 22px;
+    }
+    .hero-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.72));
+    }
+    .hero-photo div { position: relative; z-index: 1; }
+    .hero-photo strong { display: block; font-size: 28px; letter-spacing: -0.04em; }
+    .hero-photo span { display: block; opacity: .9; }
+    .intro {
+      display: grid;
+      grid-template-columns: 132px 210px 1fr;
+      gap: 22px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .intro-photo { width: 132px; height: 132px; border-radius: 22px; background: #ddd center/cover no-repeat; }
+    .count strong { display: block; font-size: 52px; letter-spacing: -0.05em; line-height: .9; }
+    .count span { display: block; margin-top: 6px; font-weight: 700; font-size: 18px; letter-spacing: -0.03em; }
+    .about p { margin: 0; color: var(--muted); max-width: 52ch; }
+    .about-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 28px; }
+    .stat { padding-right: 22px; }
+    .stat + .stat { border-left: 1px solid var(--line); padding-left: 22px; }
+    .stat-top { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px; letter-spacing: -0.04em; }
+    .stat p { margin: 6px 0 0; color: var(--muted); font-size: 13px; max-width: 32ch; }
+    section.block { margin-top: 64px; }
+    .block-head, .split-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    h2 {
+      margin: 0;
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+      font-size: clamp(32px, 3.4vw, 46px);
+      font-weight: 700;
+    }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sport-tab { border: 0; background: var(--soft); border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px; }
+    .event-grid, .coach-grid, .ad-grid { display: grid; gap: 12px; margin-top: 18px; }
+    .event-grid { grid-template-columns: repeat(4, 1fr); }
+    .coach-grid { grid-template-columns: repeat(3, 1fr); }
+    .ad-grid { grid-template-columns: repeat(4, 1fr); }
+    .card {
+      border: 0;
+      text-align: left;
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      padding: 0;
+      box-shadow: 0 8px 24px rgba(12, 61, 46, 0.06);
+      transition: transform 0.15s ease;
+    }
+    .card:hover { transform: translateY(-2px); }
+    .card-photo { height: 150px; background: #ddd center/cover no-repeat; position: relative; }
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(18,18,18,.82);
+      color: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.gold { background: var(--gold); color: #1a1404; }
+    .card-body { padding: 12px 14px 14px; }
+    .card-body strong { display: block; letter-spacing: -0.03em; }
+    .card-body p, .muted { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .price { margin-top: 8px; font-weight: 800; color: var(--navy); }
+    .coach { display: grid; grid-template-columns: 92px 1fr; min-height: 140px; }
+    .coach-photo { background: #ccc center/cover no-repeat; min-height: 140px; }
+    .coach-body { padding: 14px; }
+    .coach-body span { color: var(--gold); font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .panel {
+      margin-top: 18px;
+      background: var(--soft);
+      border-radius: 28px;
+      padding: 18px;
+    }
+    .rank {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 42px 46px 1.4fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: #fff;
+      border: 0;
+      border-radius: 16px;
+      padding: 10px 14px;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .rank b { font-size: 18px; letter-spacing: -0.04em; }
+    .avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 14px;
+    }
+    .score { font-weight: 800; text-align: right; }
+    .score small { display: block; font-weight: 600; color: var(--muted); }
+    .ad { position: relative; min-height: 280px; border-radius: 22px; overflow: hidden; border: 0; padding: 0; color: #fff; text-align: left; background: #222 center/cover no-repeat; display: flex; align-items: flex-end; }
+    .ad::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.78)); }
+    .ad div { position: relative; z-index: 1; padding: 16px; }
+    .ad em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; }
+    .footer { background: #111; color: #fff; border-radius: 0; width: 100%; padding: 40px var(--gutter) 20px; }
+    .footer-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.3fr; gap: 24px; }
+    .footer h4 { margin: 0 0 12px; font-size: 13px; color: #9a9a9a; font-weight: 600; }
+    .footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .footer a:hover { color: var(--sage); }
+    .socials { display: flex; gap: 8px; margin-top: 14px; }
+    .socials a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #333; display: grid; place-items: center; }
+    .news p { margin: 0 0 12px; color: #cfcfcf; font-size: 14px; }
+    .news form { display: flex; gap: 8px; }
+    .news input { flex: 1; border: 0; border-radius: 999px; padding: 12px 14px; background: #1c1c1c; color: #fff; outline: none; }
+    .fine { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 16px; border-top: 1px solid #242424; color: #9a9a9a; font-size: 12px; }
+    .fine nav { display: flex; gap: 14px; }
+    .note { min-height: 1.2em; font-size: 13px; color: var(--green-dark); margin: 8px 0 0; }
+    dialog { border: 0; border-radius: 24px; padding: 0; width: min(480px, calc(100% - 32px)); }
+    dialog::backdrop { background: rgba(10, 20, 14, .45); }
+    .modal { padding: 22px; }
+    .modal h3 { margin: 0 0 6px; letter-spacing: -0.03em; font-size: 26px; }
+    .modal p { margin: 0 0 12px; color: var(--muted); }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .facts div { background: var(--soft); border-radius: 12px; padding: 10px 12px; }
+    .facts small { display: block; color: var(--muted); font-size: 12px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .cover { height: 160px; border-radius: 16px; background: #ddd center/cover no-repeat; margin-bottom: 12px; }
+    #dlgSizeWrap { display: grid; gap: 6px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+    #dlgSizeWrap[hidden] { display: none; }
+    #dlgSize { border: 1px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; }
+    @media (max-width: 980px) {
+      .nav { grid-template-columns: auto 1fr auto; }
+      .nav-left .pill, #logout, .nav-right .btn-green { display: none; }
+      .hero, .intro, .event-grid, .coach-grid, .ad-grid, .footer-grid { grid-template-columns: 1fr 1fr; }
+      .intro { grid-template-columns: 110px 1fr; }
+      .about { grid-column: 1 / -1; }
+      .rank { grid-template-columns: 32px 46px 1fr auto; }
+      .rank .club { display: none; }
+    }
+    @media (max-width: 680px) {
+      .sheet { padding: 8px 16px 40px; }
+      .brand { font-size: 16px; }
+      .brand small { display: none; }
+      .nav { width: 100%; }
+      #who { display: none; }
+      .rank { gap: 8px; padding: 10px; }
+      .score { white-space: nowrap; }
+      .hero, .intro, .stats, .event-grid, .coach-grid, .ad-grid, .footer-grid, .facts { grid-template-columns: 1fr; }
+      .stat + .stat { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 14px; }
+      .hero-copy, .hero-photo { min-height: 280px; }
+      .coach { grid-template-columns: 72px 1fr; }
+      .fine, .news form { flex-direction: column; }
+      .block-head, .split-head { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="sheet">
+      <header class="nav">
+        <div class="nav-left">
+          <button class="icon-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="#121212" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <a class="pill" href="#events">Events</a>
+          <a class="pill" href="#coaches">Coaches</a>
+          <nav class="menu" id="menu">
+            <a href="#events">Events</a>
+            <a href="#coaches">Coaches</a>
+            <a href="#merch">Merch</a>
+            <a href="#rankings">Rankings</a>
+            <a href="#ads">Ads</a>
+            <button type="button" id="menuLogout">Log out</button>
+          </nav>
+        </div>
+        <a class="brand" href="#top" id="top">
+          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#0c3d2e"/><path d="M3 8c3 1 5 1 8-2M4 15c3-1 6-1 9 2" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+          Timwork <small>SPORTS</small>
+        </a>
+        <div class="nav-right">
+          <span class="pill" id="who"></span>
+          <button class="linkish" id="bagBtn" type="button">Bag</button>
+          <button class="linkish" id="logout" type="button">Log out</button>
+          <a class="btn btn-green" href="#rankings">Rankings</a>
+        </div>
+      </header>
+
+      <section class="hero" aria-label="Next match">
+        <div class="hero-copy">
+          <div>
+            <p class="kicker">Crested Pass</p>
+            <h1>Upcoming sports. Buy tickets.</h1>
+          </div>
+          <a class="btn btn-light" href="#events">See the card</a>
+          <svg class="ball" viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="70" fill="#0c3d2e"/><path d="M28 48c28 10 40 10 62-18M34 118c26-12 48-12 70 22" stroke="#fff" stroke-width="3" fill="none"/></svg>
+        </div>
+        <article class="hero-photo" style="background-image:url('images/ug-hero-match.png')">
+          <div>
+            <strong>Uganda vs Senegal</strong>
+            <span>Nakivubo Stadium · Kampala · kickoff in 2d 6h</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="intro">
+        <div class="intro-photo" style="background-image:url('images/ug-stadium.png')" role="img" aria-label="Kampala stadium at dusk"></div>
+        <div class="count">
+          <strong>8</strong>
+          <span>Events<br>this window</span>
+        </div>
+        <div class="about">
+          <div class="about-label">From the app</div>
+          <p>The same card as Crested Pass: football, basketball, tennis, boxing, swimming, and athletics. Tickets, coaches, and rankings sit under one login.</p>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Programme numbers">
+        <article class="stat"><div class="stat-top">6</div><p>Sports on the Discover tab, each with a federation and a home city.</p></article>
+        <article class="stat"><div class="stat-top">106</div><p>Athletes ranked inside their sport by goals, points, titles, wins, or medals.</p></article>
+        <article class="stat"><div class="stat-top">UGX 84,000</div><p>Amara N.’s wallet in the app. Ticket prices below come off that balance.</p></article>
+      </section>
+
+      <section class="block" id="events">
+        <div class="block-head">
+          <h2>Sports events</h2>
+          <div class="tabs" id="eventTabs"></div>
+        </div>
+        <div class="event-grid" id="eventGrid"></div>
+      </section>
+
+      <section class="block" id="coaches">
+        <div class="block-head">
+          <h2>Coaches</h2>
+          <p class="muted">Six programme coaches from Discover.</p>
+        </div>
+        <div class="coach-grid" id="coachGrid"></div>
+      </section>
+
+      <section class="block" id="merch">
+        <div class="block-head">
+          <h2>Merch</h2>
+          <div class="tabs" id="merchTabs"></div>
+        </div>
+        <div class="event-grid" id="merchGrid"></div>
+      </section>
+
+      <section class="block" id="rankings">
+        <div class="split-head">
+          <h2>Athlete rankings</h2>
+          <div class="tabs" id="rankTabs"></div>
+        </div>
+        <div class="panel" id="rankList"></div>
+      </section>
+
+      <section class="block" id="ads">
+        <div class="block-head">
+          <h2>Ads</h2>
+          <p class="muted">Trail partners and sponsor spots from the app.</p>
+        </div>
+        <div class="ad-grid" id="adGrid"></div>
+      </section>
+    </div>
+
+    <footer class="footer" id="contact">
+      <div class="footer-grid">
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#coaches">Coaches</a></li>
+            <li><a href="#rankings">Rankings</a></li>
+            <li><a href="#merch">Merch</a></li>
+          </ul>
+          <div class="socials">
+            <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noreferrer">Ig</a>
+            <a href="https://x.com" aria-label="X" target="_blank" rel="noreferrer">X</a>
+            <a href="https://youtube.com" aria-label="YouTube" target="_blank" rel="noreferrer">Yt</a>
+          </div>
+        </div>
+        <div>
+          <h4>More info</h4>
+          <ul>
+            <li><a href="#events">Tickets</a></li>
+            <li><a href="#ads">Partners</a></li>
+            <li><a href="#rankings">Athletes</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>App</h4>
+          <ul>
+            <li>Home · Discover · Wallet</li>
+            <li>Trail · You</li>
+          </ul>
+        </div>
+        <div class="news">
+          <h4>Match-week notes</h4>
+          <p>Kickoff times and partner stamps, once a week.</p>
+          <form id="newsForm">
+            <input type="email" required placeholder="Email address" aria-label="Email address">
+            <button class="btn btn-green" type="submit">Join</button>
+          </form>
+          <p class="note" id="newsNote" role="status"></p>
+        </div>
+      </div>
+      <div class="fine">
+        <span>© Timwork Sports</span>
+        <nav><a href="#contact">Privacy Policy</a><a href="#contact">Terms of Use</a></nav>
+      </div>
+    </footer>
+  </div>
+
+  <dialog id="dialog">
+    <div class="modal">
+      <div class="cover" id="dlgCover" hidden></div>
+      <p class="kicker" id="dlgKicker"></p>
+      <h3 id="dlgTitle"></h3>
+      <p id="dlgBody"></p>
+      <div class="facts" id="dlgFacts"></div>
+      <label id="dlgSizeWrap" hidden>Size
+        <select id="dlgSize"></select>
+      </label>
+      <p class="note" id="dlgNote"></p>
+      <div class="modal-actions">
+        <button class="btn pill" type="button" id="dlgClose">Close</button>
+        <button class="btn btn-green" type="button" id="dlgAction" hidden>Hold ticket</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const photos = {
+      Football: "images/ug-football.png",
+      Basketball: "images/ug-basketball.png",
+      Tennis: "images/ug-tennis.png",
+      Boxing: "images/ug-boxing.png",
+      Swimming: "images/ug-swim.png",
+      Athletics: "images/ug-track.png"
+    };
+
+    const events = [
+      { id: "ev-foot", title: "Uganda vs Senegal", sport: "Football", date: "14 Jun", time: "19:00", city: "Kampala", venue: "Nakivubo Stadium", price: 45000, hours: 54 },
+      { id: "ev-bball", title: "Cranes vs Kenya", sport: "Basketball", date: "15 Jun", time: "18:00", city: "Kampala", venue: "Lugogo Arena", price: 25000, hours: 78 },
+      { id: "ev-foot2", title: "Kenya vs Tanzania", sport: "Football", date: "16 Jun", time: "16:00", city: "Kampala", venue: "Mandela National Stadium", price: 35000, hours: 96 },
+      { id: "ev-tennis", title: "Kampala Open final", sport: "Tennis", date: "16 Jun", time: "15:00", city: "Kampala", venue: "Lugogo Tennis Club", price: 18000, hours: 98 },
+      { id: "ev-box", title: "East Africa Fight Night", sport: "Boxing", date: "17 Jun", time: "20:00", city: "Kampala", venue: "MTN Arena", price: 22000, hours: 126 },
+      { id: "ev-swim", title: "Nile Swim Cup", sport: "Swimming", date: "18 Jun", time: "10:00", city: "Kampala", venue: "Kampala Aquatic Centre", price: 12000, hours: 140 },
+      { id: "ev-track", title: "National Athletics Trials", sport: "Athletics", date: "19 Jun", time: "09:00", city: "Kampala", venue: "Mandela National Stadium", price: 8000, hours: 163 },
+      { id: "ev-tennis2", title: "Lakeside invitational", sport: "Tennis", date: "20 Jun", time: "14:00", city: "Entebbe", venue: "Botanical Gardens courts", price: 10000, hours: 192 }
+    ];
+
+    const coaches = [
+      { name: "Amina Okello", sport: "Football", role: "Head coach", years: 11, bio: "Builds the Cranes' match-week plan and the set-piece sheet for Nakivubo.", img: "images/ug-coach-amina.png" },
+      { name: "David Ssali", sport: "Basketball", role: "Head coach", years: 9, bio: "Runs the Lugogo offence and the national-team camp before the Kenya window.", img: "images/ug-coach-david.png" },
+      { name: "Grace Namutebi", sport: "Tennis", role: "High-performance coach", years: 8, bio: "Prepares the Kampala Open finalists and the lakeside invitational draw.", img: "images/ug-coach-grace.png" },
+      { name: "Joseph Kato", sport: "Boxing", role: "Head coach", years: 14, bio: "Corners the East Africa Fight Night card and the amateur undercard.", img: "images/ug-coach-joseph.png" },
+      { name: "Ruth Nakato", sport: "Swimming", role: "Head coach", years: 7, bio: "Sets the Nile Swim Cup warm-up and the sprint final lineup.", img: "images/ug-coach-ruth.png" },
+      { name: "Peter Mugisha", sport: "Athletics", role: "Sprints coach", years: 12, bio: "Calls the 100m trials and the photo-finish relays at Mandela.", img: "images/ug-coach-peter.png" }
+    ];
+
+    const ads = [
+      { brand: "Nile Cafe", place: "Nakivubo", line: "Match-day pours and a trail stamp.", detail: "Stamp + match-day menu. Open with the Uganda vs Senegal crowd.", img: "images/ug-cafe.png" },
+      { brand: "Nakasero craft market", place: "Nakasero", line: "Kampala's oldest market — crafts, coffee, and a trail partner stall.", detail: "Stamp + UTB-certified crafts.", img: "images/ug-market.png" },
+      { brand: "Entebbe Botanical Gardens", place: "Entebbe", line: "Next stamp on the trail, beside the lakeside invitational courts.", detail: "Trail partner · gardens and the 20 Jun tennis card.", img: "images/ug-gardens.png" },
+      { brand: "Source of the Nile", place: "Jinja", line: "Where the Nile begins. Partner check-in on the riverfront.", detail: "Trail partner · riverfront. Linked from the travel reel.", img: "images/ug-nile.png" }
+    ];
+
+    const merch = [
+      { id: "m1", name: "Training jersey", category: "Kit", price: 85000, detail: "Black and deep green match jersey. Breathable, club crest on the chest.", img: "images/ug-merch-jersey.png", sizes: ["S", "M", "L", "XL"] },
+      { id: "m2", name: "Coach shell", category: "Coaching", price: 120000, detail: "Sideline jacket for match week. Lightweight, deep green trim.", img: "images/ug-merch-shell.png", sizes: ["S", "M", "L", "XL"] },
+      { id: "m3", name: "Court hoodie", category: "Kit", price: 95000, detail: "Warm-up hoodie for indoor sessions and travel days.", img: "images/ug-merch-hoodie.png", sizes: ["S", "M", "L", "XL"] },
+      { id: "m4", name: "Match ball", category: "Training", price: 70000, detail: "Match-weight ball for coaching sessions and club finals.", img: "images/ug-merch-ball.png", sizes: ["Size 7"] },
+      { id: "m5", name: "Track singlet", category: "Kit", price: 45000, detail: "Race singlet for trials and club meets.", img: "images/ug-merch-singlet.png", sizes: ["XS", "S", "M", "L"] },
+      { id: "m6", name: "Session cap", category: "Training", price: 25000, detail: "Sun cap for outdoor coaching blocks.", img: "images/ug-merch-cap.png", sizes: ["One size"] }
+    ];
+
+    const sports = ["All", "Football", "Basketball", "Tennis", "Boxing", "Swimming", "Athletics"];
+    const palette = ["#0c3d2e", "#0a0a0a", "#145c43", "#1a1a1a", "#1f6b4a", "#12382c", "#2a2a2a"];
+
+    function ugx(amount) {
+      return "UGX " + amount.toLocaleString("en-US");
+    }
+    function countdown(hours) {
+      return Math.floor(hours / 24) + "d " + (hours % 24) + "h";
+    }
+    function initials(name) {
+      return name.split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+    }
+    function colorFor(name) {
+      let hash = 0;
+      for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
+      return palette[Math.abs(hash) % palette.length];
+    }
+
+    function roster() {
+      const first = ["Farouk","Sarah","Denis","Joan","Emmanuel","Patricia","Brian","Lydia","Mark","Isaac","Sharon","Moses","Claire","Joel","Anita","Joshua","Mercy","Samuel","Hannah","Peter","Amina","Daniel","Ruth","Joseph","Grace","David","Nora","Simon","Esther","Paul"];
+      const last = ["Magumba","Achieng","Wasswa","Nankya","Otim","Akello","Ssemakula","Nambi","Byaruhanga","Lubega","Atim","Waiswa","Mbabazi","Tumusiime","Kiconco","Adong","Ocen","Namara","Kato","Nakato","Mugisha","Okello","Ssali","Namutebi","Babirye","Ojok","Auma","Ssebugwawo","Nabirye","Opio"];
+      const specs = [
+        ["Football", 23, ["Striker","Midfielder","Defender","Goalkeeper","Winger"], ["Vipers SC","KCCA FC","SC Villa","URA FC"], "goals", 174],
+        ["Basketball", 15, ["Point guard","Shooting guard","Small forward","Power forward","Center"], ["City Oilers","Namuwongo Blazers","KCCA Leopards"], "points", 182],
+        ["Tennis", 12, ["Singles","Doubles"], ["Lugogo Club","Kampala Club","Entebbe Club"], "titles", 170],
+        ["Boxing", 10, ["Welterweight","Featherweight","Light heavyweight","Flyweight","Middleweight"], ["MTN Arena","Nakivubo gym","Lugogo gym"], "wins", 168],
+        ["Swimming", 18, ["Freestyle","Butterfly","Backstroke","Breaststroke"], ["Kampala Aquatic Centre","Nile Swim Club"], "medals", 172],
+        ["Athletics", 28, ["100m","1500m","Long jump","400m","Marathon","High jump"], ["Mandela Track Club","Kampala Distance","Jinja Athletics"], "medals", 168]
+      ];
+      const cities = ["Kampala","Entebbe","Jinja","Gulu"];
+      const used = new Set();
+      const out = [];
+      specs.forEach((spec, sportIndex) => {
+        const [sport, count, positions, clubs, scoreLabel, heightBase] = spec;
+        for (let i = 0; i < count; i++) {
+          let shift = 0;
+          let name = "";
+          do {
+            const fi = (i * 3 + sportIndex * 5 + shift) % first.length;
+            const li = (i * 2 + sportIndex * 7 + shift) % last.length;
+            name = first[fi] + " " + last[li];
+            shift += 1;
+          } while (used.has(name) && shift < 40);
+          used.add(name);
+          const appearances = 6 + (i * 2) % 22;
+          const scoring = (i * 3 + sportIndex) % 18;
+          const city = cities[(i + sportIndex) % cities.length];
+          const position = positions[i % positions.length];
+          const club = clubs[i % clubs.length];
+          out.push({
+            name, sport, position, club, city,
+            nationality: "Uganda",
+            age: 18 + (i * 3 + sportIndex) % 15,
+            number: 1 + (i * 7 + sportIndex) % 99,
+            heightCm: heightBase + (i * 2) % 18,
+            appearances, scoring, scoreLabel,
+            bio: name + " is a " + position + " for " + club + ". " + appearances + " appearances this season, based in " + city + "."
+          });
+        }
+      });
+      return out;
+    }
+
+    const players = roster();
+    let eventSport = "All";
+    let rankSport = "Football";
+    let showAllEvents = false;
+    let pendingTicket = null;
+    let pendingMerch = null;
+    let merchCategory = "All";
+    let bag = [];
+
+    function renderTabs(root, current, onPick) {
+      root.innerHTML = sports.map((sport) => `<button class="sport-tab${sport === current ? " on" : ""}" type="button" data-sport="${sport}">${sport}</button>`).join("");
+      root.onclick = (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        onPick(button.dataset.sport);
+      };
+    }
+
+    function renderEvents() {
+      const list = events.filter((item) => eventSport === "All" || item.sport === eventSport);
+      const visible = showAllEvents || eventSport !== "All" ? list : list.slice(0, 4);
+      document.getElementById("eventGrid").innerHTML = visible.map((item) => `
+        <button class="card" type="button" data-event="${item.id}">
+          <div class="card-photo" style="background-image:url('${({ "ev-foot2": "images/ug-stadium.png", "ev-tennis2": "images/ug-gardens.png" })[item.id] || photos[item.sport]}')">
+            <span class="badge">${item.sport}</span>
+          </div>
+          <div class="card-body">
+            <strong>${item.title}</strong>
+            <p>${item.date} · ${item.time}<br>${item.venue}, ${item.city}</p>
+            <div class="price">${ugx(item.price)} · ${countdown(item.hours)}</div>
+          </div>
+        </button>`).join("") + (list.length > visible.length ? `<button class="card" type="button" id="moreEvents"><div class="card-body"><strong>View all ${list.length}</strong><p>The rest of this window’s card.</p></div></button>` : "");
+    }
+
+    function renderCoaches() {
+      document.getElementById("coachGrid").innerHTML = coaches.map((person, index) => `
+        <button class="card coach" type="button" data-coach="${index}">
+          <div class="coach-photo" style="background-image:url('${person.img}')"></div>
+          <div class="coach-body">
+            <span>${person.sport}</span>
+            <strong>${person.name}</strong>
+            <p>${person.role} · ${person.years} years</p>
+          </div>
+        </button>`).join("");
+    }
+
+    function renderRanks() {
+      const list = players
+        .filter((player) => player.sport === rankSport)
+        .sort((a, b) => b.scoring - a.scoring || b.appearances - a.appearances || a.name.localeCompare(b.name));
+      document.getElementById("rankList").innerHTML = list.map((player, index) => {
+        const unit = player.scoring === 1 ? player.scoreLabel.slice(0, -1) : player.scoreLabel;
+        return `
+        <button class="rank" type="button" data-player="${player.sport}|${player.name}">
+          <b>${index + 1}</b>
+          <span class="avatar" style="background:${colorFor(player.name)}">${initials(player.name)}</span>
+          <span><strong>${player.name}</strong><p class="muted">${player.position} · #${player.number}</p></span>
+          <span class="club muted">${player.club}</span>
+          <span class="score">${player.scoring}<small>${unit}</small></span>
+        </button>`;
+      }).join("");
+    }
+
+    function renderAds() {
+      document.getElementById("adGrid").innerHTML = ads.map((ad, index) => `
+        <button class="ad" type="button" data-ad="${index}" style="background-image:url('${ad.img}')">
+          <div>
+            <em>Sponsored</em>
+            <strong>${ad.brand}</strong>
+            <p>${ad.place} · ${ad.line}</p>
+          </div>
+        </button>`).join("");
+    }
+
+    const dialog = document.getElementById("dialog");
+    const dlgAction = document.getElementById("dlgAction");
+    function openDialog({ kicker, title, body, facts, cover, action }) {
+      document.getElementById("dlgKicker").textContent = kicker || "";
+      document.getElementById("dlgTitle").textContent = title;
+      document.getElementById("dlgBody").textContent = body;
+      document.getElementById("dlgFacts").innerHTML = (facts || []).map(([label, value]) => `<div><small>${label}</small><strong>${value}</strong></div>`).join("");
+      document.getElementById("dlgNote").textContent = "";
+      document.getElementById("dlgSizeWrap").hidden = true;
+      const coverEl = document.getElementById("dlgCover");
+      if (cover) {
+        coverEl.hidden = false;
+        coverEl.style.backgroundImage = `url('${cover}')`;
+      } else {
+        coverEl.hidden = true;
+      }
+      if (action) {
+        dlgAction.hidden = false;
+        dlgAction.textContent = action;
+      } else {
+        dlgAction.hidden = true;
+      }
+      dialog.showModal();
+    }
+
+    document.getElementById("eventGrid").addEventListener("click", (event) => {
+      if (event.target.closest("#moreEvents")) {
+        showAllEvents = true;
+        renderEvents();
+        return;
+      }
+      const card = event.target.closest("[data-event]");
+      if (!card) return;
+      pendingMerch = null;
+      pendingTicket = events.find((item) => item.id === card.dataset.event);
+      openDialog({
+        kicker: pendingTicket.sport,
+        title: pendingTicket.title,
+        body: pendingTicket.venue + ", " + pendingTicket.city + ". Starts in " + countdown(pendingTicket.hours) + ".",
+        cover: photos[pendingTicket.sport],
+        facts: [["When", pendingTicket.date + " · " + pendingTicket.time], ["Price", ugx(pendingTicket.price)], ["Gate", "Gate 4"], ["Seat", "Held at purchase"]],
+        action: "Hold ticket"
+      });
+    });
+
+    document.getElementById("coachGrid").addEventListener("click", (event) => {
+      const card = event.target.closest("[data-coach]");
+      if (!card) return;
+      const person = coaches[Number(card.dataset.coach)];
+      pendingTicket = null;
+      openDialog({
+        kicker: person.role + " · " + person.sport,
+        title: person.name,
+        body: person.bio,
+        cover: person.img,
+        facts: [["Years", String(person.years)], ["Sport", person.sport]]
+      });
+    });
+
+    document.getElementById("rankList").addEventListener("click", (event) => {
+      const row = event.target.closest("[data-player]");
+      if (!row) return;
+      const [sport, name] = row.dataset.player.split("|");
+      const player = players.find((item) => item.sport === sport && item.name === name);
+      const ranked = players.filter((item) => item.sport === sport).sort((a, b) => b.scoring - a.scoring || b.appearances - a.appearances);
+      const place = ranked.findIndex((item) => item.name === name) + 1;
+      pendingTicket = null;
+      openDialog({
+        kicker: "Rank " + place + " · " + player.sport,
+        title: player.name,
+        body: player.bio,
+        facts: [
+          [player.scoreLabel[0].toUpperCase() + player.scoreLabel.slice(1), String(player.scoring)],
+          ["Club", player.club],
+          ["Position", player.position],
+          ["City", player.city],
+          ["Age", String(player.age)],
+          ["Number", "#" + player.number],
+          ["Height", player.heightCm + " cm"],
+          ["Appearances", String(player.appearances)]
+        ]
+      });
+    });
+
+    document.getElementById("adGrid").addEventListener("click", (event) => {
+      const card = event.target.closest("[data-ad]");
+      if (!card) return;
+      const ad = ads[Number(card.dataset.ad)];
+      pendingTicket = null;
+      openDialog({
+        kicker: "Sponsored · " + ad.place,
+        title: ad.brand,
+        body: ad.detail,
+        cover: ad.img,
+        facts: [["Placement", "Discover and Home"], ["Offer", ad.line]]
+      });
+    });
+
+    function bagLabel() {
+      const count = bag.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById("bagBtn").textContent = count ? "Bag (" + count + ")" : "Bag";
+    }
+
+    function renderMerch() {
+      const categories = ["All", "Kit", "Coaching", "Training"];
+      const tabs = document.getElementById("merchTabs");
+      tabs.innerHTML = categories.map((category) => `<button class="sport-tab${category === merchCategory ? " on" : ""}" type="button" data-cat="${category}">${category}</button>`).join("");
+      const list = merch.filter((item) => merchCategory === "All" || item.category === merchCategory);
+      document.getElementById("merchGrid").innerHTML = list.map((item) => `
+        <button class="card" type="button" data-merch="${item.id}">
+          <div class="card-photo" style="background-image:url('${item.img}')"></div>
+          <div class="card-body">
+            <strong>${item.name}</strong>
+            <p>${item.category} · ${item.sizes.join(" · ")}</p>
+            <div class="price">${ugx(item.price)}</div>
+          </div>
+        </button>`).join("");
+    }
+
+    document.getElementById("merchTabs").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      merchCategory = button.dataset.cat;
+      renderMerch();
+    });
+
+    document.getElementById("merchGrid").addEventListener("click", (event) => {
+      const card = event.target.closest("[data-merch]");
+      if (!card) return;
+      pendingTicket = null;
+      pendingMerch = merch.find((item) => item.id === card.dataset.merch);
+      const select = document.getElementById("dlgSize");
+      select.innerHTML = pendingMerch.sizes.map((size) => `<option>${size}</option>`).join("");
+      openDialog({
+        kicker: pendingMerch.category,
+        title: pendingMerch.name,
+        body: pendingMerch.detail,
+        cover: pendingMerch.img,
+        facts: [["Price", ugx(pendingMerch.price)], ["Sizes", pendingMerch.sizes.join(" · ")]],
+        action: "Add to bag"
+      });
+      document.getElementById("dlgSizeWrap").hidden = false;
+    });
+
+    document.getElementById("bagBtn").addEventListener("click", () => {
+      pendingTicket = null;
+      pendingMerch = null;
+      if (!bag.length) {
+        openDialog({ kicker: "Shop", title: "Your bag is empty", body: "Pick a jersey, shell, hoodie, ball, singlet, or cap." });
+        return;
+      }
+      const total = bag.reduce((sum, item) => sum + item.price * item.qty, 0);
+      openDialog({
+        kicker: "Shop",
+        title: "Bag",
+        body: bag.map((item) => item.qty + " × " + item.name + " (" + item.size + ")").join(", "),
+        facts: [["Total", ugx(total)]],
+        action: "Place order"
+      });
+    });
+
+    dlgAction.addEventListener("click", () => {
+      const holder = JSON.parse(localStorage.getItem("timwork_session") || "{}").name || "you";
+      if (pendingMerch && dlgAction.textContent === "Add to bag") {
+        const size = document.getElementById("dlgSize").value;
+        const existing = bag.find((item) => item.id === pendingMerch.id && item.size === size);
+        if (existing) existing.qty += 1;
+        else bag.push({ id: pendingMerch.id, name: pendingMerch.name, size, price: pendingMerch.price, qty: 1 });
+        bagLabel();
+        document.getElementById("dlgNote").textContent = pendingMerch.name + " · " + size + " is in the bag.";
+        return;
+      }
+      if (dlgAction.textContent === "Place order") {
+        const total = bag.reduce((sum, item) => sum + item.price * item.qty, 0);
+        document.getElementById("dlgNote").textContent = "Order placed for " + holder + " · " + ugx(total) + ".";
+        bag = [];
+        bagLabel();
+        dlgAction.hidden = true;
+        return;
+      }
+      if (!pendingTicket) return;
+      document.getElementById("dlgNote").textContent = "Ticket held for " + holder + " · " + ugx(pendingTicket.price) + " · " + pendingTicket.venue + ".";
+    });
+    document.getElementById("dlgClose").addEventListener("click", () => dialog.close());
+
+    const menu = document.getElementById("menu");
+    const menuBtn = document.getElementById("menuBtn");
+    menuBtn.addEventListener("click", () => {
+      const open = menu.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(open));
+    });
+    menu.addEventListener("click", () => {
+      menu.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded", "false");
+    });
+
+    document.getElementById("newsForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      document.getElementById("newsNote").textContent = "You’re on the match-week list.";
+      event.target.reset();
+    });
+
+    function bindEventTabs() {
+      renderTabs(document.getElementById("eventTabs"), eventSport, (sport) => {
+        eventSport = sport;
+        showAllEvents = false;
+        bindEventTabs();
+        renderEvents();
+      });
+    }
+    function bindRankTabs() {
+      const root = document.getElementById("rankTabs");
+      const options = sports.slice(1);
+      root.innerHTML = options.map((sport) => `<button class="sport-tab${sport === rankSport ? " on" : ""}" type="button" data-sport="${sport}">${sport}</button>`).join("");
+      root.onclick = (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        rankSport = button.dataset.sport;
+        bindRankTabs();
+        renderRanks();
+      };
+    }
+    const session = JSON.parse(localStorage.getItem("timwork_session") || "{}");
+    document.getElementById("who").textContent = session.name || "";
+    const logOut = () => {
+      localStorage.removeItem("timwork_session");
+      location.href = "index.html";
+    };
+    document.getElementById("logout").addEventListener("click", logOut);
+    document.getElementById("menuLogout").addEventListener("click", logOut);
+
+    bindEventTabs();
+    bindRankTabs();
+    renderEvents();
+    renderCoaches();
+    renderRanks();
+    renderAds();
+    renderMerch();
+    bagLabel();
+  </script>
+</body>
+</html>

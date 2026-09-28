@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timwork Sports</title>
+  <meta name="description" content="Timwork Sports — Uganda’s card for events, coaches, rankings, and tickets.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #0c3d2e;
+      --green-dark: #07261c;
+      --ink: #0a0a0a;
+      --muted: #5e6561;
+      --line: #eceeed;
+      --soft: #f4f6f5;
+      --gutter: clamp(20px, 3vw, 48px);
+      --wf: cubic-bezier(.165, .84, .44, 1);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--ink); background: #fff; line-height: 1.5; overflow-x: clip; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .wrap { width: 100%; padding: 28px var(--gutter) 72px; }
+    .nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 72px; }
+    .nav-left, .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-right { justify-content: flex-end; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.04em; font-size: 22px; }
+    .brand small { font-size: 11px; letter-spacing: 0.14em; color: var(--green); }
+    .pill, .btn { border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; font-weight: 600; font-size: 14px; }
+    .pill { background: var(--soft); }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover { background: var(--green-dark); }
+    .btn-light { background: #fff; color: var(--ink); }
+    .linkish { font-weight: 600; padding: 10px 8px; }
+    .stage {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      color: #fff;
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+    }
+    .stage-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+    .bg {
+      position: absolute; inset: 0;
+      background: #111 center 40%/cover no-repeat;
+      opacity: 0;
+      transform: scale(1.08);
+      transition: opacity .9s var(--wf), transform 7s linear;
+    }
+    .bg.on { opacity: 1; transform: scale(1); }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(100deg, rgba(0,0,0,.82) 0%, rgba(0,0,0,.45) 48%, rgba(12,61,46,.28) 100%),
+        linear-gradient(180deg, rgba(0,0,0,.5) 0%, transparent 28%, rgba(0,0,0,.62) 100%);
+    }
+    .stage > *:not(.stage-bg) { position: relative; z-index: 2; }
+    .stage { margin-top: 0; }
+    .stage .nav { padding: 10px var(--gutter) 0; z-index: 3; }
+    .icon-btn {
+      display: none; width: 42px; height: 42px; border-radius: 50%; border: 0;
+      background: rgba(255,255,255,.14); color: #fff; place-items: center;
+    }
+    .menu {
+      display: none; position: absolute; top: 64px; left: 0;
+      background: #fff; color: var(--ink); border-radius: 18px; padding: 8px; min-width: 200px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.18); z-index: 5;
+    }
+    .menu.open { display: grid; }
+    .menu a { padding: 12px 14px; border-radius: 12px; font-weight: 600; }
+    .menu a:hover { background: var(--soft); }
+    .stage .brand, .stage .linkish { color: #fff; }
+    .stage .brand small { color: #d7efe4; }
+    .stage .pill { background: rgba(255,255,255,.14); color: #fff; }
+    .stage .btn-green { background: #fff; color: var(--green); }
+    .stage .btn-green:hover { background: #e7f2ec; }
+    .stage .btn-light { background: transparent; color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.7); }
+    .stage-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px var(--gutter) 28px;
+      gap: 28px;
+    }
+    .live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .live i {
+      width: 8px; height: 8px; border-radius: 50%; background: #fff;
+      box-shadow: 0 0 0 0 rgba(255,255,255,.7);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+    }
+    .stage h1 {
+      margin: 0;
+      max-width: 10ch;
+      font-size: clamp(56px, 7.4vw, 108px);
+      line-height: .88;
+      letter-spacing: -0.06em;
+    }
+    .stage-lead { margin: 16px 0 0; max-width: 36ch; color: rgba(255,255,255,.86); font-size: 18px; }
+    .stage-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .stage-actions .btn { padding: 14px 22px; font-size: 15px; }
+    .sport-carousel { display: grid; gap: 12px; width: 100%; min-width: 0; }
+    .sport-viewport { overflow: hidden; width: 100%; min-width: 0; }
+    .sport-head { display: flex; align-items: center; justify-content: space-between; }
+    .sport-head p { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .sport-arrows { display: flex; gap: 8px; }
+    .sport-arrows button {
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.12); color: #fff; font-size: 18px;
+    }
+    .sport-arrows button:hover { background: #fff; color: var(--green); }
+    .sport-track { display: flex; gap: 12px; transition: transform .7s var(--wf); }
+    .sport-slide {
+      flex: 0 0 240px; border: 1px solid rgba(255,255,255,.18); border-radius: 18px; overflow: hidden;
+      background: rgba(10,10,10,.42); color: #fff; text-align: left; padding: 0; backdrop-filter: blur(12px);
+      transition: border-color .4s var(--wf), transform .4s var(--wf);
+    }
+    .sport-slide:hover { transform: translate3d(0, -6px, 0); }
+    .sport-slide.on { border-color: #fff; }
+    .sport-photo { display: block; height: 112px; background: #222 center/cover no-repeat; }
+    .sport-slide strong { display: block; padding: 10px 12px 0; letter-spacing: -0.03em; }
+    .sport-slide em { display: block; padding: 2px 12px 8px; font-style: normal; color: rgba(255,255,255,.75); font-size: 13px; }
+    .sport-slide .bar { display: block; height: 3px; background: rgba(255,255,255,.22); overflow: hidden; }
+    .sport-slide .bar i { display: block; height: 3px; width: 0; background: #fff; }
+    .sport-slide.on .bar i { animation: fill 4.2s linear; }
+    @keyframes fill { to { width: 100%; } }
+    .load-in { opacity: 0; animation: wf-up .9s var(--wf) forwards; }
+    .load-in:nth-child(1) { animation-delay: .05s; }
+    .load-in:nth-child(2) { animation-delay: .16s; }
+    .load-in:nth-child(3) { animation-delay: .28s; }
+    .load-in:nth-child(4) { animation-delay: .4s; }
+    .sport-carousel.load-in { animation-delay: .52s; }
+    .stage .nav { animation: wf-down .7s var(--wf) both; }
+    @keyframes wf-up { from { opacity: 0; transform: translate3d(0, 36px, 0); } to { opacity: 1; transform: none; } }
+    @keyframes wf-down { from { opacity: 0; transform: translate3d(0, -18px, 0); } to { opacity: 1; transform: none; } }
+    .reveal { opacity: 0; transform: translate3d(0, 48px, 0); transition: opacity .8s var(--wf), transform .8s var(--wf); }
+    .reveal.in { opacity: 1; transform: none; }
+    .card.reveal.in:hover, .ad.reveal.in:hover { transform: translate3d(0, -8px, 0); }
+    .card, .ad { transition: transform .45s var(--wf), box-shadow .45s var(--wf); }
+    .card-photo, .coach-photo, .thumb { transition: transform .7s var(--wf); }
+    .card:hover, .ad:hover { transform: translate3d(0, -8px, 0); }
+    .card:hover .card-photo, .card:hover .coach-photo { transform: scale(1.06); }
+    .intro { display: grid; grid-template-columns: 140px 200px 1fr; gap: 28px; align-items: center; margin-top: 18px; }
+    .thumb { width: 140px; height: 140px; border-radius: 24px; background: #ddd center/cover no-repeat; }
+    .count strong { font-size: 56px; letter-spacing: -0.05em; line-height: .9; display: block; }
+    .count span { font-weight: 700; font-size: 18px; letter-spacing: -0.03em; }
+    .about p { margin: 6px 0 0; color: var(--muted); max-width: 52ch; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 36px; padding-top: 8px; }
+    .stat + .stat { border-left: 1px solid var(--line); padding-left: 28px; }
+    .stat b { font-size: 28px; letter-spacing: -0.04em; }
+    .stat p { margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: 32ch; }
+    .wrap > section { margin-top: 72px; }
+    .wrap > section:first-child { margin-top: 12px; }
+    @media (prefers-reduced-motion: reduce) {
+      .live i, .sport-slide.on .bar i, .load-in, .stage .nav, .bg { animation: none; }
+      .load-in, .reveal, .bg.on { opacity: 1; transform: none; }
+      .reveal { transition: none; }
+      .sport-track, .card, .ad, .card-photo, .bg { transition: none; }
+    }
+    .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
+    h2 { margin: 0; font-size: clamp(32px, 3.5vw, 48px); letter-spacing: -0.045em; line-height: 1.05; }
+    .muted { color: var(--muted); margin: 0; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.05); }
+    .card-photo { height: 180px; background: #ccc center/cover no-repeat; }
+    .card-body { padding: 14px 14px 16px; }
+    .card-body strong { display: block; letter-spacing: -0.03em; }
+    .card-body p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .coach { display: grid; grid-template-columns: 108px 1fr; min-height: 140px; }
+    .coach-photo { background: #ccc center/cover no-repeat; }
+    .coach-body { padding: 16px; }
+    .coach-body span { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .ad { min-height: 280px; border-radius: 22px; background: #222 center/cover no-repeat; position: relative; color: #fff; display: flex; align-items: flex-end; overflow: hidden; }
+    .ad::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.75)); }
+    .ad div { position: relative; z-index: 1; padding: 18px; }
+    .ad em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .footer { background: #0a0a0a; color: #fff; padding: 40px var(--gutter) 22px; }
+    .footer-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.2fr; gap: 24px; }
+    .footer h4 { margin: 0 0 12px; color: #9a9a9a; font-size: 13px; font-weight: 600; }
+    .footer a { display: block; padding: 4px 0; }
+    .footer a:hover { color: #9dceba; }
+    .fine { margin-top: 28px; padding-top: 16px; border-top: 1px solid #242424; color: #9a9a9a; font-size: 12px; display: flex; justify-content: space-between; }
+    @media (max-width: 980px) {
+      .intro, .grid4, .grid3, .footer-grid, .stats { grid-template-columns: 1fr 1fr; }
+      .sport-slide { flex-basis: 210px; }
+      .about { grid-column: 1 / -1; }
+    }
+    @media (max-width: 680px) {
+      .nav { grid-template-columns: auto minmax(0, 1fr) auto; width: 100%; }
+      .nav-left .pill, .nav-right .linkish { display: none; }
+      .icon-btn { display: grid; }
+      .brand { font-size: 16px; min-width: 0; }
+      .brand small { display: none; }
+      .stage .btn { white-space: nowrap; }
+      .stage .nav { padding-left: 16px; padding-right: 16px; }
+      .nav-right .btn-green { padding: 9px 12px; font-size: 13px; }
+      .intro, .grid4, .grid3, .footer-grid, .stats { grid-template-columns: 1fr; }
+      .stat + .stat { border-left: 0; padding-left: 0; }
+      .sport-slide { flex-basis: 78vw; }
+      .stage-main { width: 100%; min-width: 0; padding: 24px 16px 20px; }
+      .stage h1 { font-size: 40px; max-width: 100%; letter-spacing: -0.045em; }
+      .stage-lead { max-width: 100%; font-size: 16px; }
+      .head, .fine { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <section class="stage" id="top">
+    <div class="stage-bg" aria-hidden="true">
+      <div class="bg on" style="background-image:url('images/ug-hero-match.png')"></div>
+      <div class="bg" style="background-image:url('images/ug-basketball.png')"></div>
+      <div class="bg" style="background-image:url('images/ug-tennis.png')"></div>
+      <div class="bg" style="background-image:url('images/ug-boxing.png')"></div>
+      <div class="bg" style="background-image:url('images/ug-swim.png')"></div>
+      <div class="bg" style="background-image:url('images/ug-track.png')"></div>
+    </div>
+    <header class="nav">
+      <div class="nav-left">
+        <button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <a class="pill" href="#sports">Sports</a>
+        <a class="pill" href="#merch">Merch</a>
+        <nav class="menu" id="menu">
+          <a href="#sports">Sports</a>
+          <a href="#merch">Merch</a>
+          <a href="#coaches">Coaches</a>
+          <a href="#partners">Ads</a>
+          <a href="auth.html?mode=login" data-auth="login">Log in</a>
+        </nav>
+      </div>
+      <a class="brand" href="#top">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#fff"/><path d="M3 8c3 1 5 1 8-2M4 15c3-1 6-1 9 2" stroke="#0c3d2e" stroke-width="1.2" fill="none"/></svg>
+        Timwork <small>SPORTS</small>
+      </a>
+      <div class="nav-right">
+        <a class="linkish" href="auth.html?mode=login" data-auth="login">Log in</a>
+        <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">Join Now</a>
+      </div>
+    </header>
+    <div class="stage-main">
+      <div>
+        <p class="live load-in"><i></i> <span id="sportLive">Football · Nakivubo</span></p>
+        <h1 class="load-in">Take your game to the next level</h1>
+        <p class="stage-lead load-in">Uganda vs Senegal at Nakivubo. Tickets, coaches, rankings, merch, and the rest of the Kampala card.</p>
+        <div class="stage-actions load-in">
+          <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">Get your seat</a>
+          <a class="btn btn-light" href="#sports">See the sports</a>
+        </div>
+      </div>
+      <div class="sport-carousel load-in" aria-roledescription="carousel" aria-label="All sports">
+        <div class="sport-head">
+          <p>All six sports</p>
+          <div class="sport-arrows">
+            <button type="button" id="sportPrev" aria-label="Previous sport">‹</button>
+            <button type="button" id="sportNext" aria-label="Next sport">›</button>
+          </div>
+        </div>
+        <div class="sport-viewport">
+          <div class="sport-track" id="sportTrack">
+            <button class="sport-slide on" type="button"><span class="sport-photo" style="background-image:url('images/ug-football.png')"></span><strong>Football</strong><em>Uganda vs Senegal · Nakivubo</em><span class="bar"><i></i></span></button>
+            <button class="sport-slide" type="button"><span class="sport-photo" style="background-image:url('images/ug-basketball.png')"></span><strong>Basketball</strong><em>Cranes vs Kenya · Lugogo</em><span class="bar"><i></i></span></button>
+            <button class="sport-slide" type="button"><span class="sport-photo" style="background-image:url('images/ug-tennis.png')"></span><strong>Tennis</strong><em>Kampala Open · Lugogo</em><span class="bar"><i></i></span></button>
+            <button class="sport-slide" type="button"><span class="sport-photo" style="background-image:url('images/ug-boxing.png')"></span><strong>Boxing</strong><em>Fight Night · MTN Arena</em><span class="bar"><i></i></span></button>
+            <button class="sport-slide" type="button"><span class="sport-photo" style="background-image:url('images/ug-swim.png')"></span><strong>Swimming</strong><em>Nile Swim Cup · Aquatic Centre</em><span class="bar"><i></i></span></button>
+            <button class="sport-slide" type="button"><span class="sport-photo" style="background-image:url('images/ug-track.png')"></span><strong>Athletics</strong><em>National trials · Mandela</em><span class="bar"><i></i></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="intro">
+      <div class="thumb" style="background-image:url('images/ug-football.png')" role="img" aria-label="Ugandan footballer on the ball"></div>
+      <div class="count">
+        <strong>8</strong>
+        <span>Events<br>this window</span>
+      </div>
+      <div class="about">
+        <strong>About Timwork Sports</strong>
+        <p>The Crested Pass card for Uganda: events, coaches, rankings, ads, and a shop for kit. Create an account before you buy a ticket or a jersey.</p>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article class="stat"><b>6</b><p>Sports on the Discover tab, each with a home venue in Uganda.</p></article>
+      <article class="stat"><b>106</b><p>Athletes ranked inside their sport by goals, points, titles, wins, or medals.</p></article>
+      <article class="stat"><b>6</b><p>Programme coaches, from the Cranes’ match week to the 100m trials.</p></article>
+    </section>
+
+    <section id="sports">
+      <div class="head">
+        <h2>Sports on the card</h2>
+        <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">See events</a>
+      </div>
+      <div class="grid4">
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-football.png')"></div><div class="card-body"><strong>Football</strong><p>Uganda vs Senegal · Nakivubo Stadium</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-basketball.png')"></div><div class="card-body"><strong>Basketball</strong><p>Cranes vs Kenya · Lugogo Arena</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-tennis.png')"></div><div class="card-body"><strong>Tennis</strong><p>Kampala Open final · Lugogo Tennis Club</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-boxing.png')"></div><div class="card-body"><strong>Boxing</strong><p>East Africa Fight Night · MTN Arena</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-swim.png')"></div><div class="card-body"><strong>Swimming</strong><p>Nile Swim Cup · Kampala Aquatic Centre</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-track.png')"></div><div class="card-body"><strong>Athletics</strong><p>National trials · Mandela National Stadium</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-stadium.png')"></div><div class="card-body"><strong>Kenya vs Tanzania</strong><p>Mandela National Stadium · 16 Jun</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-gardens.png')"></div><div class="card-body"><strong>Lakeside invitational</strong><p>Botanical Gardens courts · Entebbe</p></div></article>
+      </div>
+    </section>
+
+    <section id="coaches">
+      <div class="head">
+        <h2>Coaches</h2>
+        <p class="muted">Sign in to read each programme bio.</p>
+      </div>
+      <div class="grid3">
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-amina.png')"></div><div class="coach-body"><span>Football</span><strong>Amina Okello</strong><p class="muted">Head coach · 11 years</p></div></article>
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-david.png')"></div><div class="coach-body"><span>Basketball</span><strong>David Ssali</strong><p class="muted">Head coach · 9 years</p></div></article>
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-grace.png')"></div><div class="coach-body"><span>Tennis</span><strong>Grace Namutebi</strong><p class="muted">High-performance · 8 years</p></div></article>
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-joseph.png')"></div><div class="coach-body"><span>Boxing</span><strong>Joseph Kato</strong><p class="muted">Head coach · 14 years</p></div></article>
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-ruth.png')"></div><div class="coach-body"><span>Swimming</span><strong>Ruth Nakato</strong><p class="muted">Head coach · 7 years</p></div></article>
+        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-peter.png')"></div><div class="coach-body"><span>Athletics</span><strong>Peter Mugisha</strong><p class="muted">Sprints coach · 12 years</p></div></article>
+      </div>
+    </section>
+
+    <section id="merch">
+      <div class="head">
+        <h2>Merch</h2>
+        <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">Shop the kit</a>
+      </div>
+      <div class="grid3">
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-jersey.png')"></div><div class="card-body"><strong>Training jersey</strong><p>Kit · S–XL · UGX 85,000</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-shell.png')"></div><div class="card-body"><strong>Coach shell</strong><p>Coaching · S–XL · UGX 120,000</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-hoodie.png')"></div><div class="card-body"><strong>Court hoodie</strong><p>Kit · S–XL · UGX 95,000</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-ball.png')"></div><div class="card-body"><strong>Match ball</strong><p>Training · Size 7 · UGX 70,000</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-singlet.png')"></div><div class="card-body"><strong>Track singlet</strong><p>Kit · XS–L · UGX 45,000</p></div></article>
+        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-cap.png')"></div><div class="card-body"><strong>Session cap</strong><p>Training · One size · UGX 25,000</p></div></article>
+      </div>
+    </section>
+
+    <section id="partners">
+      <div class="head">
+        <h2>Partner ads</h2>
+        <p class="muted">Trail spots from the app. Open them after you sign in.</p>
+      </div>
+      <div class="grid4">
+        <article class="ad" style="background-image:url('images/ug-cafe.png')"><div><em>Sponsored</em><strong>Nile Cafe</strong><p>Nakivubo · match-day pours</p></div></article>
+        <article class="ad" style="background-image:url('images/ug-market.png')"><div><em>Sponsored</em><strong>Nakasero market</strong><p>Crafts and a trail stamp</p></div></article>
+        <article class="ad" style="background-image:url('images/ug-gardens.png')"><div><em>Sponsored</em><strong>Entebbe gardens</strong><p>Next stamp on the trail</p></div></article>
+        <article class="ad" style="background-image:url('images/ug-nile.png')"><div><em>Sponsored</em><strong>Source of the Nile</strong><p>Jinja riverfront</p></div></article>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>Timwork Sports</h4>
+        <a href="auth.html?mode=signup">Create an account</a>
+        <a href="auth.html?mode=login">Log in</a>
+      </div>
+      <div>
+        <h4>On the card</h4>
+        <a href="#sports">Events</a>
+        <a href="#merch">Merch</a>
+        <a href="#partners">Ads</a>
+      </div>
+      <div>
+        <h4>After you sign in</h4>
+        <a href="auth.html?mode=login">Rankings</a>
+        <a href="auth.html?mode=login">Tickets</a>
+      </div>
+      <div>
+        <h4>Cities</h4>
+        <p class="muted" style="color:#cfcfcf">Kampala, Entebbe, Jinja, and Gulu. The same clubs as the Crested Pass app.</p>
+      </div>
+    </div>
+    <div class="fine"><span>© Timwork Sports</span><span>Light mode · deep green, black, white</span></div>
+  </footer>
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const menu = document.getElementById("menu");
+    menuBtn.addEventListener("click", () => {
+      const open = menu.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(open));
+    });
+    menu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        menu.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    const slides = [...document.querySelectorAll(".sport-slide")];
+    const backs = [...document.querySelectorAll(".stage-bg .bg")];
+    const track = document.getElementById("sportTrack");
+    const viewport = document.querySelector(".sport-viewport");
+    const live = document.getElementById("sportLive");
+    const labels = ["Football · Nakivubo", "Basketball · Lugogo", "Tennis · Lugogo", "Boxing · MTN Arena", "Swimming · Aquatic Centre", "Athletics · Mandela"];
+    let sportIndex = 0;
+    let sportTimer;
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function showSport(next) {
+      sportIndex = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle("on", i === sportIndex));
+      backs.forEach((bg, i) => bg.classList.toggle("on", i === sportIndex));
+      live.textContent = labels[sportIndex];
+      const max = Math.max(0, track.scrollWidth - viewport.clientWidth);
+      const left = Math.min(slides[sportIndex].offsetLeft, max);
+      track.style.transform = "translate3d(" + -left + "px,0,0)";
+    }
+    function queueSport() {
+      clearInterval(sportTimer);
+      if (reduceMotion) return;
+      sportTimer = setInterval(() => showSport(sportIndex + 1), 4200);
+    }
+    slides.forEach((slide, i) => slide.addEventListener("click", () => { showSport(i); queueSport(); }));
+    document.getElementById("sportPrev").addEventListener("click", () => { showSport(sportIndex - 1); queueSport(); });
+    document.getElementById("sportNext").addEventListener("click", () => { showSport(sportIndex + 1); queueSport(); });
+    document.querySelector(".sport-carousel").addEventListener("mouseenter", () => clearInterval(sportTimer));
+    document.querySelector(".sport-carousel").addEventListener("mouseleave", queueSport);
+    queueSport();
+
+    document.querySelectorAll(".intro > *, .stat, .head, .card, .ad, .footer-grid > div").forEach((el) => el.classList.add("reveal"));
+    document.querySelectorAll(".grid4, .grid3, .stats, .footer-grid, .intro").forEach((group) => {
+      [...group.children].forEach((child, i) => { child.style.transitionDelay = (i * 80) + "ms"; });
+    });
+    if (reduceMotion) {
+      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+    } else {
+      const seen = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const passed = entry.boundingClientRect.top < window.innerHeight * 0.92;
+          if (!entry.isIntersecting && !passed) return;
+          entry.target.classList.add("in");
+          seen.unobserve(entry.target);
+        });
+      }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" });
+      document.querySelectorAll(".reveal").forEach((el) => seen.observe(el));
+    }
+
+    const session = JSON.parse(localStorage.getItem("timwork_session") || "null");
+    if (session && session.email) {
+      document.querySelectorAll("[data-auth]").forEach((link) => {
+        link.href = "timworksports.html";
+        if (link.dataset.auth === "join") link.textContent = "Open the card";
+        if (link.dataset.auth === "login") link.textContent = session.name.split(" ")[0];
+      });
+    }
+  </script>
+</body>
+</html>
