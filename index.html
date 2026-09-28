@@ -186,6 +186,7 @@
     .muted { color: var(--muted); margin: 0; }
     .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
     .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    a.card { display: block; color: inherit; }
     .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.05); }
     .card-photo { height: 180px; background: #ccc center/cover no-repeat; }
     .card-body { padding: 14px 14px 16px; }
@@ -269,7 +270,8 @@
         <h1 class="load-in">Take your game to the next level</h1>
         <p class="stage-lead load-in">Uganda vs Senegal at Nakivubo. Tickets, coaches, rankings, merch, and the rest of the Kampala card.</p>
         <div class="stage-actions load-in">
-          <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">Get your seat</a>
+          <a class="btn btn-green" href="timworksports.html#events">Get your seat</a>
+          <a class="btn btn-light" href="downloads/crested-pass.zip" download>Get the Android app</a>
           <a class="btn btn-light" href="#sports">See the sports</a>
         </div>
       </div>
@@ -304,7 +306,7 @@
       </div>
       <div class="about">
         <strong>About Timwork Sports</strong>
-        <p>The Crested Pass card for Uganda: events, coaches, rankings, ads, and a shop for kit. Create an account before you buy a ticket or a jersey.</p>
+        <p>Buy a ticket or a jersey with no account. Sign in when you want a coach or an athlete profile.</p>
       </div>
     </section>
 
@@ -317,47 +319,47 @@
     <section id="sports">
       <div class="head">
         <h2>Sports on the card</h2>
-        <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">See events</a>
+        <a class="btn btn-green" href="timworksports.html#events">See events</a>
       </div>
       <div class="grid4">
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-football.png')"><span class="datechip"><b>14</b><small>Jun</small></span></div><div class="card-body"><strong>Uganda vs Senegal</strong><p>Football · Nakivubo Stadium</p><div class="price"><span>UGX 45,000</span><span class="when">14 Jun · 19:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-basketball.png')"><span class="datechip"><b>15</b><small>Jun</small></span></div><div class="card-body"><strong>Cranes vs Kenya</strong><p>Basketball · Lugogo Arena</p><div class="price"><span>UGX 25,000</span><span class="when">15 Jun · 18:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-tennis.png')"><span class="datechip"><b>16</b><small>Jun</small></span></div><div class="card-body"><strong>Kampala Open final</strong><p>Tennis · Lugogo Tennis Club</p><div class="price"><span>UGX 18,000</span><span class="when">16 Jun · 15:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-boxing.png')"><span class="datechip"><b>17</b><small>Jun</small></span></div><div class="card-body"><strong>East Africa Fight Night</strong><p>Boxing · MTN Arena</p><div class="price"><span>UGX 22,000</span><span class="when">17 Jun · 20:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-swim.png')"><span class="datechip"><b>18</b><small>Jun</small></span></div><div class="card-body"><strong>Nile Swim Cup</strong><p>Swimming · Kampala Aquatic Centre</p><div class="price"><span>UGX 12,000</span><span class="when">18 Jun · 10:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-track.png')"><span class="datechip"><b>19</b><small>Jun</small></span></div><div class="card-body"><strong>National Athletics Trials</strong><p>Athletics · Mandela National Stadium</p><div class="price"><span>UGX 8,000</span><span class="when">19 Jun · 09:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-stadium.png')"><span class="datechip"><b>16</b><small>Jun</small></span></div><div class="card-body"><strong>Kenya vs Tanzania</strong><p>Football · Mandela National Stadium</p><div class="price"><span>UGX 35,000</span><span class="when">16 Jun · 16:00</span></div></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-gardens.png')"><span class="datechip"><b>20</b><small>Jun</small></span></div><div class="card-body"><strong>Lakeside invitational</strong><p>Tennis · Botanical Gardens, Entebbe</p><div class="price"><span>UGX 10,000</span><span class="when">20 Jun · 14:00</span></div></div></article>
+        <a class="card" href="detail.html?type=event&id=ev-foot"><div class="card-photo" style="background-image:url('images/ug-football.png')"><span class="datechip"><b>14</b><small>Jun</small></span></div><div class="card-body"><strong>Uganda vs Senegal</strong><p>Football · Nakivubo Stadium</p><div class="price"><span>UGX 45,000</span><span class="when">14 Jun · 19:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-bball"><div class="card-photo" style="background-image:url('images/ug-basketball.png')"><span class="datechip"><b>15</b><small>Jun</small></span></div><div class="card-body"><strong>Cranes vs Kenya</strong><p>Basketball · Lugogo Arena</p><div class="price"><span>UGX 25,000</span><span class="when">15 Jun · 18:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-tennis"><div class="card-photo" style="background-image:url('images/ug-tennis.png')"><span class="datechip"><b>16</b><small>Jun</small></span></div><div class="card-body"><strong>Kampala Open final</strong><p>Tennis · Lugogo Tennis Club</p><div class="price"><span>UGX 18,000</span><span class="when">16 Jun · 15:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-box"><div class="card-photo" style="background-image:url('images/ug-boxing.png')"><span class="datechip"><b>17</b><small>Jun</small></span></div><div class="card-body"><strong>East Africa Fight Night</strong><p>Boxing · MTN Arena</p><div class="price"><span>UGX 22,000</span><span class="when">17 Jun · 20:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-swim"><div class="card-photo" style="background-image:url('images/ug-swim.png')"><span class="datechip"><b>18</b><small>Jun</small></span></div><div class="card-body"><strong>Nile Swim Cup</strong><p>Swimming · Kampala Aquatic Centre</p><div class="price"><span>UGX 12,000</span><span class="when">18 Jun · 10:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-track"><div class="card-photo" style="background-image:url('images/ug-track.png')"><span class="datechip"><b>19</b><small>Jun</small></span></div><div class="card-body"><strong>National Athletics Trials</strong><p>Athletics · Mandela National Stadium</p><div class="price"><span>UGX 8,000</span><span class="when">19 Jun · 09:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-foot2"><div class="card-photo" style="background-image:url('images/ug-stadium.png')"><span class="datechip"><b>16</b><small>Jun</small></span></div><div class="card-body"><strong>Kenya vs Tanzania</strong><p>Football · Mandela National Stadium</p><div class="price"><span>UGX 35,000</span><span class="when">16 Jun · 16:00</span></div></div></a>
+        <a class="card" href="detail.html?type=event&id=ev-tennis2"><div class="card-photo" style="background-image:url('images/ug-gardens.png')"><span class="datechip"><b>20</b><small>Jun</small></span></div><div class="card-body"><strong>Lakeside invitational</strong><p>Tennis · Botanical Gardens, Entebbe</p><div class="price"><span>UGX 10,000</span><span class="when">20 Jun · 14:00</span></div></div></a>
       </div>
     </section>
 
     <section id="coaches">
       <div class="head">
         <h2>Coaches</h2>
-        <p class="muted">Sign in to read each programme bio.</p>
+        <a class="btn btn-green" href="auth.html?mode=login&next=timworksports.html%23coaches">Sign in to open</a>
       </div>
       <div class="grid3">
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-amina.png')"></div><div class="coach-body"><span>Football</span><strong>Amina Okello</strong><p class="muted">Head coach · 11 years</p></div></article>
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-david.png')"></div><div class="coach-body"><span>Basketball</span><strong>David Ssali</strong><p class="muted">Head coach · 9 years</p></div></article>
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-grace.png')"></div><div class="coach-body"><span>Tennis</span><strong>Grace Namutebi</strong><p class="muted">High-performance · 8 years</p></div></article>
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-joseph.png')"></div><div class="coach-body"><span>Boxing</span><strong>Joseph Kato</strong><p class="muted">Head coach · 14 years</p></div></article>
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-ruth.png')"></div><div class="coach-body"><span>Swimming</span><strong>Ruth Nakato</strong><p class="muted">Head coach · 7 years</p></div></article>
-        <article class="card coach"><div class="coach-photo" style="background-image:url('images/ug-coach-peter.png')"></div><div class="coach-body"><span>Athletics</span><strong>Peter Mugisha</strong><p class="muted">Sprints coach · 12 years</p></div></article>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DAmina%2520Okello"><div class="coach-photo" style="background-image:url('images/ug-coach-amina.png')"></div><div class="coach-body"><span>Football</span><strong>Amina Okello</strong><p class="muted">Head coach · 11 years</p></div></a>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DDavid%2520Ssali"><div class="coach-photo" style="background-image:url('images/ug-coach-david.png')"></div><div class="coach-body"><span>Basketball</span><strong>David Ssali</strong><p class="muted">Head coach · 9 years</p></div></a>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DGrace%2520Namutebi"><div class="coach-photo" style="background-image:url('images/ug-coach-grace.png')"></div><div class="coach-body"><span>Tennis</span><strong>Grace Namutebi</strong><p class="muted">High-performance · 8 years</p></div></a>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DJoseph%2520Kato"><div class="coach-photo" style="background-image:url('images/ug-coach-joseph.png')"></div><div class="coach-body"><span>Boxing</span><strong>Joseph Kato</strong><p class="muted">Head coach · 14 years</p></div></a>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DJoel%2520Tumusiime"><div class="coach-photo" style="background-image:url('images/ug-coach-ruth.png')"></div><div class="coach-body"><span>Swimming</span><strong>Joel Tumusiime</strong><p class="muted">Head coach · 7 years</p></div></a>
+        <a class="card coach" href="auth.html?mode=login&next=detail.html%3Ftype%3Dcoach%26name%3DMercy%2520Adong"><div class="coach-photo" style="background-image:url('images/ug-coach-peter.png')"></div><div class="coach-body"><span>Athletics</span><strong>Mercy Adong</strong><p class="muted">Sprints coach · 12 years</p></div></a>
       </div>
     </section>
 
     <section id="merch">
       <div class="head">
         <h2>Merch</h2>
-        <a class="btn btn-green" href="auth.html?mode=signup" data-auth="join">Shop the kit</a>
+        <a class="btn btn-green" href="#merch">Shop the kit</a>
       </div>
       <div class="grid3">
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-jersey.png')"></div><div class="card-body"><strong>Training jersey</strong><p>Kit · S–XL · UGX 85,000</p></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-shell.png')"></div><div class="card-body"><strong>Coach shell</strong><p>Coaching · S–XL · UGX 120,000</p></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-hoodie.png')"></div><div class="card-body"><strong>Court hoodie</strong><p>Kit · S–XL · UGX 95,000</p></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-ball.png')"></div><div class="card-body"><strong>Match ball</strong><p>Training · Size 7 · UGX 70,000</p></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-singlet.png')"></div><div class="card-body"><strong>Track singlet</strong><p>Kit · XS–L · UGX 45,000</p></div></article>
-        <article class="card"><div class="card-photo" style="background-image:url('images/ug-merch-cap.png')"></div><div class="card-body"><strong>Session cap</strong><p>Training · One size · UGX 25,000</p></div></article>
+        <a class="card" href="detail.html?type=merch&id=m1"><div class="card-photo" style="background-image:url('images/ug-merch-jersey.png')"></div><div class="card-body"><strong>Training jersey</strong><p>Kit · S–XL · UGX 85,000</p></div></a>
+        <a class="card" href="detail.html?type=merch&id=m2"><div class="card-photo" style="background-image:url('images/ug-merch-shell.png')"></div><div class="card-body"><strong>Coach shell</strong><p>Coaching · S–XL · UGX 120,000</p></div></a>
+        <a class="card" href="detail.html?type=merch&id=m3"><div class="card-photo" style="background-image:url('images/ug-merch-hoodie.png')"></div><div class="card-body"><strong>Court hoodie</strong><p>Kit · S–XL · UGX 95,000</p></div></a>
+        <a class="card" href="detail.html?type=merch&id=m4"><div class="card-photo" style="background-image:url('images/ug-merch-ball.png')"></div><div class="card-body"><strong>Match ball</strong><p>Training · Size 7 · UGX 70,000</p></div></a>
+        <a class="card" href="detail.html?type=merch&id=m5"><div class="card-photo" style="background-image:url('images/ug-merch-singlet.png')"></div><div class="card-body"><strong>Track singlet</strong><p>Kit · XS–L · UGX 45,000</p></div></a>
+        <a class="card" href="detail.html?type=merch&id=m6"><div class="card-photo" style="background-image:url('images/ug-merch-cap.png')"></div><div class="card-body"><strong>Session cap</strong><p>Training · One size · UGX 25,000</p></div></a>
       </div>
     </section>
 
@@ -381,17 +383,18 @@
         <h4>Timwork Sports</h4>
         <a href="auth.html?mode=signup">Create an account</a>
         <a href="auth.html?mode=login">Log in</a>
+        <a href="downloads/crested-pass.zip" download>Android app · v1.2</a>
       </div>
       <div>
         <h4>On the card</h4>
-        <a href="#sports">Events</a>
+        <a href="timworksports.html#events">Events</a>
         <a href="#merch">Merch</a>
         <a href="#partners">Ads</a>
       </div>
       <div>
         <h4>After you sign in</h4>
-        <a href="auth.html?mode=login">Rankings</a>
-        <a href="auth.html?mode=login">Tickets</a>
+        <a href="auth.html?mode=login&next=timworksports.html%23coaches">Coaches</a>
+        <a href="auth.html?mode=login&next=timworksports.html%23rankings">Athletes</a>
       </div>
       <div>
         <h4>Cities</h4>

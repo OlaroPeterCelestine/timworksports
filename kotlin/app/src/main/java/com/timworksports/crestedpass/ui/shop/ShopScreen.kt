@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -60,6 +61,7 @@ fun ShopScreen(
     if (item != null) {
         MerchDetail(
             item = item,
+            buyerName = state.user.name,
             ordered = item.id in orders,
             onOrder = { orders = orders + item.id },
             onBack = { open = null }
@@ -108,6 +110,7 @@ fun ShopScreen(
 @Composable
 private fun MerchDetail(
     item: MerchItem,
+    buyerName: String,
     ordered: Boolean,
     onOrder: () -> Unit,
     onBack: () -> Unit
@@ -115,7 +118,16 @@ private fun MerchDetail(
     val colors = MaterialTheme.colorScheme
     val sizes = item.sizes.split(" · ").map { it.trim() }.filter { it.isNotEmpty() }
     var size by remember(item.id) { mutableStateOf(sizes.firstOrNull().orEmpty()) }
+    var name by remember(item.id) { mutableStateOf(buyerName) }
+    var phone by remember(item.id) { mutableStateOf("") }
+    var city by remember(item.id) { mutableStateOf("Kampala") }
+    var address by remember(item.id) { mutableStateOf("") }
+    var receipt by remember(item.id) { mutableStateOf<String?>(null) }
     val reference = "TW-${item.id.removePrefix("m").padStart(4, '0')}"
+    val ready = name.trim().length >= 2 &&
+        phone.count { it.isDigit() } >= 9 &&
+        city.isNotBlank() &&
+        address.trim().length >= 5
     Column(
         Modifier
             .fillMaxSize()
@@ -157,14 +169,22 @@ private fun MerchDetail(
         } else {
             Caption(item.sizes)
         }
+        val open = receipt == null && !ordered
+        OutlinedTextField(name, { name = it }, label = { Text("Full name") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), enabled = open)
+        OutlinedTextField(phone, { phone = it }, label = { Text("Phone") }, singleLine = true, keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), enabled = open)
+        OutlinedTextField(city, { city = it }, label = { Text("City") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), enabled = open)
+        OutlinedTextField(address, { address = it }, label = { Text("Delivery address") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), enabled = open)
+        Caption("Pay on delivery. No card is taken in this prototype.")
         PrimaryButton(
-            text = if (ordered) "Order placed" else "Order · ${item.price.asUgx()}",
-            onClick = onOrder,
+            text = if (receipt != null || ordered) "Order placed" else "Place order · ${item.price.asUgx()}",
+            onClick = {
+                receipt = "$reference · $size · ${name.trim()} · ${phone.trim()} · ${address.trim()}, ${city.trim()}. Delivery in 2–4 days. Pay on delivery."
+                onOrder()
+            },
             gold = true,
-            enabled = !ordered
+            enabled = receipt == null && !ordered && ready
         )
-        if (ordered) {
-            Caption("$reference · $size · Kampala delivery in 2–4 days. Pay on delivery in this prototype.")
-        }
+        if (receipt != null) Caption(receipt!!)
+        Spacer(Modifier.height(24.dp))
     }
 }

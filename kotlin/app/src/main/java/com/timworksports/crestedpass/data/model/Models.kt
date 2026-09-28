@@ -234,7 +234,77 @@ data class Player(
             "athletics" -> "event_track"
             else -> "event_soccer"
         }
+
+    fun sessions(): List<TrainingSession> {
+        val seed = kotlin.math.abs(id.hashCode())
+        val plan = when (sport.lowercase()) {
+            "football" -> listOf("Pitch session", "Fitness run", "Set pieces", "League match")
+            "basketball" -> listOf("Shootaround", "Full court", "Conditioning", "League game")
+            "tennis" -> listOf("Court drills", "Match play", "Fitness", "Club final")
+            "boxing" -> listOf("Bag work", "Sparring", "Roadwork", "Fight night")
+            "swimming" -> listOf("Aerobic set", "Sprint set", "Technique", "Cup final")
+            else -> listOf("Track session", "Tempo run", "Gym", "Trials")
+        }
+        val dates = listOf("Mon 22", "Wed 24", "Fri 26", "Sat 27")
+        return plan.mapIndexed { index, title ->
+            val distance = 4.2 + ((seed + index * 17) % 90) / 10.0
+            val minutes = 32 + (seed + index * 11) % 75
+            TrainingSession(
+                id = "$id-$index",
+                title = title,
+                kind = if (index == plan.lastIndex) "Competition" else "Training",
+                date = dates[index],
+                distanceKm = distance,
+                minutes = minutes,
+                avgHr = 126 + (seed + index * 3) % 32,
+                maxHr = 162 + (seed + index) % 22,
+                elevationM = (seed + index * 13) % 160,
+                effort = 5 + (seed + index) % 5,
+                notes = "$name logged this $sport block in $city. Effort stayed steady through the main set."
+            )
+        }
+    }
 }
+
+data class TrainingSession(
+    val id: String,
+    val title: String,
+    val kind: String,
+    val date: String,
+    val distanceKm: Double,
+    val minutes: Int,
+    val avgHr: Int,
+    val maxHr: Int,
+    val elevationM: Int,
+    val effort: Int,
+    val notes: String
+) {
+    val pace: String
+        get() {
+            if (distanceKm <= 0.0) return "$minutes min"
+            val seconds = (minutes * 60 / distanceKm).toInt()
+            return "%d:%02d /km".format(seconds / 60, seconds % 60)
+        }
+
+    val distanceLabel: String
+        get() = "%.1f km".format(distanceKm)
+
+    val splits: List<String>
+        get() {
+            val base = if (distanceKm <= 0.0) minutes * 12 else (minutes * 60 / distanceKm).toInt()
+            return List(5) { index ->
+                val seconds = (base + (index - 2) * 6).coerceAtLeast(60)
+                "%d:%02d".format(seconds / 60, seconds % 60)
+            }
+        }
+}
+
+fun personalTraining(): List<TrainingSession> = listOf(
+    TrainingSession("me-0", "Dawn run", "Training", "Mon 22", 8.4, 46, 148, 171, 42, 6, "Easy start out of Kololo, then a steady climb toward the ridge."),
+    TrainingSession("me-1", "Pitch session", "Training", "Wed 24", 6.1, 72, 139, 166, 12, 7, "Passing patterns, finishing, and a 20-minute conditioned game."),
+    TrainingSession("me-2", "Recovery jog", "Training", "Fri 26", 5.2, 34, 122, 141, 18, 4, "Short and quiet. Heart rate stayed in the easy band."),
+    TrainingSession("me-3", "Club match", "Competition", "Sat 27", 10.6, 95, 156, 182, 8, 9, "Full match at the club ground. Second half pace held.")
+)
 
 data class Destination(
     val id: String,

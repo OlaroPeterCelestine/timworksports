@@ -11,14 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="ui.css">
   <script>document.documentElement.dataset.theme = localStorage.getItem("timwork_theme") || "light";</script>
-  <script>
-    try {
-      const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
-      if (!gate || !gate.email) location.replace("index.html");
-    } catch (error) {
-      location.replace("index.html");
-    }
-  </script>
   <style>
     :root {
       --green: #0c3d2e;
@@ -768,7 +760,10 @@
           return;
         }
         const total = bag.reduce((sum, item) => sum + item.price * item.qty, 0);
-        const ref = "TW-" + String(bag.length + 1).padStart(4, "0");
+        const ref = "TW-" + String(bag[0].id.replace(/\D/g, "")).padStart(4, "0");
+        const social = Timwork.loadSocial();
+        bag.forEach((item) => social.orders.push({ id: item.id, name: item.name, size: item.size, ref, shipName, phone, city, address, qty: item.qty }));
+        Timwork.saveSocial(social);
         document.getElementById("dlgNote").textContent = ref + " · " + ugx(total) + " · " + shipName + " · " + phone + " · " + address + ", " + city + ". Delivery in 2–4 days. Pay on delivery.";
         bag = [];
         bagLabel();
@@ -919,8 +914,41 @@
         renderRanks();
       };
     }
-    const session = JSON.parse(localStorage.getItem("timwork_session") || "{}");
-    document.getElementById("who").textContent = session.name || "";
+    const session = JSON.parse(localStorage.getItem("timwork_session") || "null") || {};
+    const guest = !session.email;
+    document.getElementById("who").textContent = guest ? "Log in" : (session.name || "");
+    if (guest) {
+      document.getElementById("who").href = "auth.html?mode=login";
+      document.getElementById("logout").hidden = true;
+      document.getElementById("menuLogout").hidden = true;
+      document.getElementById("createEvent").hidden = true;
+      const feedLink = document.querySelector('a.pill[href="feed.html"]');
+      if (feedLink) feedLink.href = "auth.html?mode=login";
+      const rankBtn = document.querySelector(".nav-right .btn-green");
+      rankBtn.textContent = "Athletes";
+      rankBtn.href = "auth.html?mode=login&next=" + encodeURIComponent("timworksports.html#rankings");
+      document.querySelector('.nav-left a.pill[href="#coaches"]').href = "auth.html?mode=login&next=" + encodeURIComponent("timworksports.html#coaches");
+      document.querySelectorAll("#menu a").forEach((link) => {
+        const locked = ["feed.html", "detail.html?type=you", "#coaches", "#clubs", "#profiles", "#rankings"];
+        if (locked.includes(link.getAttribute("href"))) {
+          link.href = "auth.html?mode=login&next=" + encodeURIComponent(link.getAttribute("href").startsWith("#") ? "timworksports.html" + link.getAttribute("href") : link.getAttribute("href"));
+        }
+      });
+      [
+        ["coaches", "Sign in to open a coach.", "timworksports.html#coaches"],
+        ["profiles", "Sign in to see the athletes.", "timworksports.html#profiles"],
+        ["rankings", "Sign in to see the rankings.", "timworksports.html#rankings"],
+        ["clubs", "Sign in to join a club.", "timworksports.html#clubs"]
+      ].forEach(([id, label, next]) => {
+        const section = document.getElementById(id);
+        section.querySelectorAll(".rail, .coach-grid, .panel, .tabs, #openSport, .block-head a, .split-head a").forEach((node) => { node.hidden = true; });
+        const note = document.createElement("p");
+        note.className = "muted";
+        note.style.marginTop = "12px";
+        note.innerHTML = label + ' <a class="btn btn-green" href="auth.html?mode=login&next=' + encodeURIComponent(next) + '">Log in</a>';
+        section.appendChild(note);
+      });
+    }
     const logOut = () => {
       localStorage.removeItem("timwork_session");
       location.href = "index.html";

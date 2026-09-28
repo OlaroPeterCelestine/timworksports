@@ -26,4 +26,8 @@ class DiscoverViewModel(
     fun addToTrail(id: String) {
         viewModelScope.launch { repository.addDestinationToTrail(id) }
     }
+
+    fun createEvent(title: String, sport: String, city: String, venue: String, date: String, time: String) {
+        viewModelScope.launch { repository.createEvent(title, sport, city, venue, date, time) }
+    }
 }

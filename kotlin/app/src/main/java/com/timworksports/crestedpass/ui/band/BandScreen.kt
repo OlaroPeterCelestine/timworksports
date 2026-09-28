@@ -36,7 +36,6 @@ import com.timworksports.crestedpass.ui.components.PrimaryButton
 import com.timworksports.crestedpass.ui.components.ScreenHeader
 import com.timworksports.crestedpass.ui.components.SerifTitle
 import com.timworksports.crestedpass.ui.theme.Gold
-import com.timworksports.crestedpass.ui.theme.Navy
 import com.timworksports.crestedpass.ui.theme.SurfaceWhite
 
 @Composable
@@ -105,7 +104,7 @@ fun BandScreen(
             BrandCard {
                 GoldLabel("Last tap")
                 Spacer(Modifier.height(6.dp))
-                Text(lastTap!!, color = Navy, fontSize = 15.sp)
+                Text(lastTap!!, color = MaterialTheme.colorScheme.onBackground, fontSize = 15.sp)
             }
         }
         Spacer(Modifier.height(16.dp))

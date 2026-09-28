@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.Sports
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ import com.timworksports.crestedpass.ui.band.BandScreen
 import com.timworksports.crestedpass.ui.discover.DiscoverScreen
 import com.timworksports.crestedpass.ui.embassy.EmbassyScreen
 import com.timworksports.crestedpass.ui.home.HomeScreen
+import com.timworksports.crestedpass.ui.home.NotificationsScreen
 import com.timworksports.crestedpass.ui.predict.PredictScreen
 import com.timworksports.crestedpass.ui.profile.ProfileScreen
 import com.timworksports.crestedpass.ui.profile.SettingsScreen
@@ -111,13 +113,15 @@ private val tabs = listOf(
     Tab(AppGraph.Coaches, "Coaches", Icons.Outlined.Sports),
     Tab(AppGraph.Events, "Events", Icons.Outlined.Event),
     Tab(AppGraph.Athletes, "Athletes", Icons.Outlined.Groups),
-    Tab(AppGraph.Shop, "Shop", Icons.Outlined.ShoppingBag)
+    Tab(AppGraph.Shop, "Shop", Icons.Outlined.ShoppingBag),
+    Tab(AppGraph.Settings, "Settings", Icons.Outlined.Settings)
 )
 
 private fun screenTitle(route: String): String = when {
     route == AppGraph.You -> "You"
     route == AppGraph.Predict -> "Predict"
     route == AppGraph.Settings -> "Settings"
+    route == AppGraph.Notifications -> "Notifications"
     route == AppGraph.Embassy -> "Fan Embassy"
     route == AppGraph.Ticket || route.startsWith("event/") -> "Ticket"
     route == AppGraph.Band -> "Crested Band"
@@ -207,7 +211,8 @@ fun CrestedPassApp(
                         onTrail = { goTab(AppGraph.Trail) },
                         onScan = { nav.navigate(AppGraph.ArLens) },
                         onEmbassy = { nav.navigate(AppGraph.Embassy) },
-                        onTicket = { nav.navigate(AppGraph.Ticket) },
+                        onTicket = { },
+                        onNotifications = { nav.navigate(AppGraph.Notifications) },
                         onBand = { nav.navigate(AppGraph.Band) },
                         onProfile = { nav.navigate(AppGraph.You) },
                         onCoaches = { goTab(AppGraph.Coaches) },
@@ -262,16 +267,19 @@ fun CrestedPassApp(
                         onTicket = { nav.navigate(AppGraph.Ticket) },
                         onBand = { nav.navigate(AppGraph.Band) },
                         onEmbassy = { nav.navigate(AppGraph.Embassy) },
-                        onSettings = { nav.navigate(AppGraph.Settings) },
+                        onSettings = { goTab(AppGraph.Settings) },
                         onSignOut = onSignOut
                     )
+                }
+                composable(AppGraph.Notifications) {
+                    NotificationsScreen()
                 }
                 composable(AppGraph.Settings) {
                     SettingsScreen(
                         factory = factory,
                         themeMode = themeMode,
                         onSetTheme = onSetTheme,
-                        onBack = { nav.popBackStack() },
+                        onBack = null,
                         onWallet = { goTab(AppGraph.Wallet) },
                         onBand = { nav.navigate(AppGraph.Band) },
                         onEmbassy = { nav.navigate(AppGraph.Embassy) },

@@ -18,4 +18,5 @@ interface CrestedPassRepository {
     suspend fun reissueBand()
     suspend fun simulateBandTap()
     suspend fun buyTicket(eventId: String)
+    suspend fun createEvent(title: String, sport: String, city: String, venue: String, date: String, time: String)
 }

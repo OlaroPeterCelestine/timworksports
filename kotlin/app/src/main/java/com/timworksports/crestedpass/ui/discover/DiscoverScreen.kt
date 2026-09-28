@@ -98,7 +98,6 @@ import com.timworksports.crestedpass.ui.media.imageRes
 import androidx.compose.material3.MaterialTheme
 import com.timworksports.crestedpass.ui.theme.AlertRed
 import com.timworksports.crestedpass.ui.theme.Gold
-import com.timworksports.crestedpass.ui.theme.Navy
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -132,6 +131,8 @@ fun DiscoverScreen(
     var sportProfile by remember { mutableStateOf<SportProfile?>(null) }
     var coach by remember { mutableStateOf<Coach?>(null) }
     var player by remember { mutableStateOf<Player?>(null) }
+    var creatingEvent by remember { mutableStateOf(false) }
+    var hostedEvent by remember { mutableStateOf<FestivalEvent?>(null) }
     var chromeHeightPx by remember { mutableFloatStateOf(0f) }
     var overlayHeightPx by remember { mutableFloatStateOf(0f) }
     var titleHeightPx by remember { mutableFloatStateOf(0f) }
@@ -145,14 +146,32 @@ fun DiscoverScreen(
     val adsScroll = rememberScrollState()
     val density = LocalDensity.current
 
-    BackHandler(enabled = playing != null || player != null || sportProfile != null || coach != null || destination != null) {
+    BackHandler(enabled = creatingEvent || hostedEvent != null || playing != null || player != null || sportProfile != null || coach != null || destination != null) {
         when {
+            creatingEvent -> creatingEvent = false
+            hostedEvent != null -> hostedEvent = null
             playing != null -> playing = null
             player != null -> player = null
             sportProfile != null -> sportProfile = null
             coach != null -> coach = null
             else -> destination = null
         }
+    }
+
+    if (creatingEvent) {
+        CreateEventForm(
+            onSave = { title, sport, cityName, venue, date, time ->
+                vm.createEvent(title, sport, cityName, venue, date, time)
+                creatingEvent = false
+            },
+            onBack = { creatingEvent = false }
+        )
+        return
+    }
+
+    if (hostedEvent != null) {
+        HostedEventDetail(hostedEvent!!, onBack = { hostedEvent = null })
+        return
     }
 
     if (playing != null) {
@@ -181,7 +200,7 @@ fun DiscoverScreen(
 
     val openPlayer = player
     if (openPlayer != null) {
-        PlayerDetail(
+        AthleteReport(
             player = openPlayer,
             peers = state.players.filter { it.sport == openPlayer.sport },
             onBack = { player = null }
@@ -281,7 +300,9 @@ fun DiscoverScreen(
                 ad = null,
                 scrollState = eventsScroll,
                 topInset = topInset,
-                onEventTicket = onEventTicket
+                onEventTicket = onEventTicket,
+                onCreate = { creatingEvent = true },
+                onHosted = { hostedEvent = it }
             )
             PANE_HIGHLIGHTS -> HighlightsGrid(
                 clips = state.highlights,
@@ -694,7 +715,9 @@ private fun EventsList(
     ad: PromoAd?,
     scrollState: ScrollState,
     topInset: Dp,
-    onEventTicket: (String) -> Unit
+    onEventTicket: (String) -> Unit,
+    onCreate: () -> Unit,
+    onHosted: (FestivalEvent) -> Unit
 ) {
     val owned = tickets.map { it.eventId }.toSet()
     val colors = MaterialTheme.colorScheme
@@ -705,12 +728,15 @@ private fun EventsList(
             .padding(horizontal = 20.dp)
     ) {
         Spacer(Modifier.height(topInset))
+        PrimaryButton("Create event", onCreate, gold = true)
+        Spacer(Modifier.height(12.dp))
         if (ad != null) {
             AdCard(ad)
             Spacer(Modifier.height(12.dp))
         }
         events.sortedBy { it.kickoffInHours }.forEach { event ->
-            BrandCard(onClick = { onEventTicket(event.id) }) {
+            val hosted = event.price == 0
+            BrandCard(onClick = { if (hosted) onHosted(event) else onEventTicket(event.id) }) {
                 Column {
                     SportCover(
                         event = event,
@@ -727,11 +753,20 @@ private fun EventsList(
                         Caption("${event.whenLabel} · ${event.city}")
                         Spacer(Modifier.height(6.dp))
                         Row {
-                            Text(event.price.asUgx(), color = colors.onBackground, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                            Text(
+                                if (hosted) "Open" else event.price.asUgx(),
+                                color = colors.onBackground,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            )
                             Spacer(Modifier.weight(1f))
                             Text(
-                                if (event.id in owned) "View ticket" else "Buy ticket",
-                                color = if (event.id in owned) colors.onSurfaceVariant else Navy,
+                                when {
+                                    hosted -> "Your event"
+                                    event.id in owned -> "View ticket"
+                                    else -> "Buy ticket"
+                                },
+                                color = if (hosted || event.id !in owned) Gold else colors.onSurfaceVariant,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 12.sp
                             )
@@ -882,7 +917,7 @@ private fun RankingsList(
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text(athlete.name, color = colors.onBackground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        Caption("${athlete.club} · ${athlete.position}")
+                        Caption("${athlete.club} · ${athlete.sessions().size} activities")
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text("${athlete.scoring}", color = colors.onBackground, fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -943,55 +978,6 @@ private fun AdsList(
             Spacer(Modifier.height(12.dp))
         }
         Spacer(Modifier.height(28.dp))
-    }
-}
-
-@Composable
-private fun PlayerDetail(player: Player, peers: List<Player>, onBack: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val ranked = peers.sortedWith(compareByDescending<Player> { it.scoring }.thenBy { it.name })
-    val rank = ranked.indexOfFirst { it.id == player.id }.let { if (it < 0) peers.size else it + 1 }
-    val form = listOf("W", "W", "D", "W", "L").mapIndexed { index, _ ->
-        listOf("W", "D", "L")[(player.scoring + index) % 3]
-    }.joinToString("  ")
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp)
-    ) {
-        ScreenHeader(player.name, "${player.sport} · rank $rank of ${ranked.size}", onBack = onBack)
-        Spacer(Modifier.height(12.dp))
-        Image(
-            painter = painterResource(imageRes(player.imageName)),
-            contentDescription = player.sport,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp)
-                .clip(RoundedCornerShape(14.dp))
-        )
-        Spacer(Modifier.height(16.dp))
-        GoldLabel("${player.position} · ${player.club}")
-        Spacer(Modifier.height(16.dp))
-        GoldLabel("Season")
-        DetailLine("Rank", "$rank of ${ranked.size}")
-        DetailLine("Appearances", "${player.appearances}")
-        DetailLine(player.scoringLabel.replaceFirstChar { it.uppercase() }, "${player.scoring}")
-        DetailLine("Last five", form)
-        Spacer(Modifier.height(12.dp))
-        GoldLabel("Profile")
-        DetailLine("Nationality", player.nationality)
-        DetailLine("City", player.city)
-        DetailLine("Age", "${player.age}")
-        DetailLine("Squad number", "#${player.number}")
-        DetailLine("Height", "${player.heightCm} cm")
-        Spacer(Modifier.height(12.dp))
-        GoldLabel("Notes")
-        Caption(player.bio)
-        Spacer(Modifier.height(8.dp))
-        Caption("${player.name} is ${player.age}, plays ${player.position} for ${player.club}, and sits $rank in the ${player.sport} table.")
     }
 }
 

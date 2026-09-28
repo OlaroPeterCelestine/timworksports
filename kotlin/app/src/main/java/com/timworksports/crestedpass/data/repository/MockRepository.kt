@@ -154,6 +154,21 @@ class MockRepository : CrestedPassRepository {
         if (state.value.crestedBand.status == "active") collectNextStamp()
     }
 
+    override suspend fun createEvent(
+        title: String,
+        sport: String,
+        city: String,
+        venue: String,
+        date: String,
+        time: String
+    ) {
+        state.update { current ->
+            val id = "ev-${current.events.size + 1}-${title.hashCode().toString().replace("-", "x")}"
+            val created = FestivalEvent(id, title, sport, date, time, city, venue, 0, 12)
+            current.copy(events = listOf(created) + current.events)
+        }
+    }
+
     override suspend fun buyTicket(eventId: String) {
         state.update { current ->
             val event = current.events.find { it.id == eventId } ?: return@update current

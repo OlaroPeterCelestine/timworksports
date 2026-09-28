@@ -62,7 +62,7 @@ fun SettingsScreen(
     factory: CrestedPassViewModelFactory,
     themeMode: ThemeMode,
     onSetTheme: (ThemeMode) -> Unit,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     onWallet: () -> Unit,
     onBand: () -> Unit,
     onEmbassy: () -> Unit,

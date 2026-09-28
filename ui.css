@@ -1,5 +1,16 @@
 /* Shared Timwork UI. Event listings follow the Ticketmaster / Eventbrite pattern:
    a date chip on the photo, the price on its own row, and a sticky ticket bar. */
+[hidden] { display: none !important; }
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
 :root {
   --green: #0c3d2e;
   --green-dark: #07261c;

@@ -12,8 +12,13 @@
   <script>document.documentElement.dataset.theme = localStorage.getItem("timwork_theme") || "light";</script>
   <script>
     try {
+      const kind = new URLSearchParams(location.search).get("type") || "";
+      const open = kind === "event" || kind === "merch" || kind === "place";
       const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
-      if (!gate || !gate.email) location.replace("auth.html?mode=login");
+      if (!open && (!gate || !gate.email)) {
+        const next = "detail.html" + location.search;
+        location.replace("auth.html?mode=login&next=" + encodeURIComponent(next));
+      }
     } catch (error) {
       location.replace("auth.html?mode=login");
     }
@@ -141,7 +146,17 @@
     const params = new URLSearchParams(location.search);
     const type = params.get("type") || "";
     const players = T.roster();
-    const me = T.session();
+    const me = T.session() || {};
+    if (!me.email) {
+      const feedLink = document.querySelector('a[href="feed.html"]');
+      const youLink = document.querySelector('a[href="detail.html?type=you"]');
+      if (feedLink) feedLink.href = "auth.html?mode=login";
+      if (youLink) {
+        youLink.textContent = "Log in";
+        youLink.href = "auth.html?mode=login";
+      }
+      document.getElementById("logout").hidden = true;
+    }
     const app = document.getElementById("app");
 
     function esc(value) {
@@ -749,7 +764,12 @@
         const ref = "TW-" + String(view.merch.id.replace(/\D/g, "")).padStart(4, "0");
         state.orders.push({ id: view.merch.id, name: view.merch.name, size, ref, shipName, phone, city, address });
         T.saveSocial(state);
-        document.getElementById("order").textContent = "Order placed";
+        const orderBtn = document.getElementById("order");
+        orderBtn.textContent = "Order placed";
+        orderBtn.disabled = true;
+        ["shipName", "shipPhone", "shipCity", "shipAddress", "size"].forEach((id) => {
+          document.getElementById(id).disabled = true;
+        });
         note.textContent = ref + " · " + size + " · " + shipName + " · " + phone + " · " + address + ", " + city + ". Delivery in 2–4 days. Pay on delivery.";
       };
     }

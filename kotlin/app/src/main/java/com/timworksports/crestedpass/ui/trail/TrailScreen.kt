@@ -138,10 +138,11 @@ private fun StampNode(state: StampState) {
         StampState.NEXT_AVAILABLE -> Gold
         StampState.LOCKED -> LockedGray
     }
+    val colors = MaterialTheme.colorScheme
     val fill = when (state) {
         StampState.COMPLETED -> StampGreen
-        StampState.NEXT_AVAILABLE -> SurfaceWhite
-        StampState.LOCKED -> Cream
+        StampState.NEXT_AVAILABLE -> colors.surface
+        StampState.LOCKED -> colors.surfaceVariant
     }
     Box(
         Modifier

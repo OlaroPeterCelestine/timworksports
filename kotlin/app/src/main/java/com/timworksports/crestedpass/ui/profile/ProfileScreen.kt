@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.Bedtime
-import androidx.compose.material.icons.outlined.ConfirmationNumber
 import androidx.compose.material.icons.automirrored.outlined.DirectionsWalk
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocalFireDepartment
@@ -96,6 +95,12 @@ fun ProfileScreen(
     val snapshot by vm.uiState.collectAsState()
     val colors = MaterialTheme.colorScheme
     val user = snapshot.user
+    var openSession by remember { mutableStateOf<com.timworksports.crestedpass.data.model.TrainingSession?>(null) }
+    val session = openSession
+    if (session != null) {
+        com.timworksports.crestedpass.ui.discover.SessionReport(session, onBack = { openSession = null })
+        return
+    }
     val shots = vm.myPostImages(snapshot)
     val nextTier = if (snapshot.loyalty.tier == "Silver") "Gold" else "next tier"
 
@@ -162,6 +167,8 @@ fun ProfileScreen(
             }
         }
         Spacer(Modifier.height(16.dp))
+        com.timworksports.crestedpass.ui.discover.YourTraining(onOpen = { openSession = it })
+        Spacer(Modifier.height(16.dp))
         SportsDream(players = snapshot.players, squad = snapshot.squad)
         Spacer(Modifier.height(16.dp))
         PassCard(user = user, ticket = snapshot.ticket, band = snapshot.crestedBand, onWallet = onWallet)
@@ -169,11 +176,7 @@ fun ProfileScreen(
         GoldLabel("Shortcuts")
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            QuickAction("Ticket", Icons.Outlined.ConfirmationNumber, onTicket, Modifier.weight(1f))
             QuickAction("Band", Icons.Outlined.Watch, onBand, Modifier.weight(1f))
-        }
-        Spacer(Modifier.height(10.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             QuickAction("Predict", Icons.Outlined.SportsSoccer, onPredict, Modifier.weight(1f))
             QuickAction("Embassy", Icons.Outlined.Apartment, onEmbassy, Modifier.weight(1f))
         }

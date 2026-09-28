@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.Sports
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +65,7 @@ fun HomeScreen(
     onScan: () -> Unit,
     onEmbassy: () -> Unit,
     onTicket: () -> Unit,
+    onNotifications: () -> Unit = {},
     onBand: () -> Unit,
     onProfile: () -> Unit,
     onCoaches: () -> Unit = {},
@@ -76,6 +79,7 @@ fun HomeScreen(
     val colors = MaterialTheme.colorScheme
     var viewerIndex by remember { mutableStateOf<Int?>(null) }
     var seen by remember { mutableStateOf(setOf<String>()) }
+    var unread by rememberSaveable { mutableStateOf(true) }
 
     Column(
         Modifier
@@ -92,16 +96,29 @@ fun HomeScreen(
         ) {
             Column {
                 Text("Timwork Sports", color = colors.onBackground, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                Text("Coaching, events, athletes, shop", color = colors.onSurfaceVariant, fontSize = 14.sp)
+                Text("Clubs, athletes, and the game", color = colors.onSurfaceVariant, fontSize = 14.sp)
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Text(
-                    "Ticket",
-                    color = colors.onBackground,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.clickable(onClick = onTicket)
-                )
+                Box(Modifier.clickable {
+                    unread = false
+                    onNotifications()
+                }) {
+                    Icon(
+                        Icons.Outlined.Notifications,
+                        contentDescription = "Notifications",
+                        tint = colors.onBackground,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    if (unread) {
+                        Box(
+                            Modifier
+                                .align(Alignment.TopEnd)
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(Gold)
+                        )
+                    }
+                }
                 AvatarMark(
                     key = state.user.name,
                     initials = state.user.initials,
@@ -135,6 +152,9 @@ fun HomeScreen(
                     QuickAction(Icons.Outlined.CalendarMonth, "Book", onCoaches)
                     QuickAction(Icons.Outlined.ShoppingBag, "Shop", onShop)
                 }
+            }
+            item {
+                AthleteSocial(players = state.players, onSeeAthletes = onAthletes)
             }
             items(state.shots, key = { it.id }) { shot ->
                 ShotPost(shot = shot, onLike = { vm.toggleShotLike(shot.id) })

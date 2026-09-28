@@ -46,6 +46,7 @@ object AppGraph {
     const val Trail = "trail"
     const val You = "you"
     const val Settings = "settings"
+    const val Notifications = "notifications"
     const val Embassy = "embassy"
     const val Ticket = "ticket"
     const val EventTicket = "event/{eventId}"

@@ -1,5 +1,6 @@
 .DS_Store
 .vercel
+.firebase/
 .derivedData/
 xcuserdata/
 *.xcuserstate
@@ -15,4 +16,5 @@ captures/
 .cxx
 *.apk
 *.aab
+downloads/*.zip
 .kotlin/
