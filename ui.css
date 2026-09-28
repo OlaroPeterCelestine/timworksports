@@ -1,0 +1,92 @@
+/* Shared Timwork UI. Event listings follow the Ticketmaster / Eventbrite pattern:
+   a date chip on the photo, the price on its own row, and a sticky ticket bar. */
+:root {
+  --green: #0c3d2e;
+  --green-dark: #07261c;
+  --ink: #0a0a0a;
+  --muted: #5c6560;
+  --line: #e7eae8;
+  --soft: #f4f6f5;
+  --canvas: #f3f5f4;
+  --radius: 16px;
+  --bar: 64px;
+}
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+body.canvas { background: var(--canvas); }
+body.canvas .sheet { background: transparent; }
+.card-photo { position: relative; }
+.std-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, .94);
+  backdrop-filter: saturate(1.2) blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.sheet > .std-nav {
+  margin-left: calc(var(--gutter, 20px) * -1);
+  margin-right: calc(var(--gutter, 20px) * -1);
+  padding-left: var(--gutter, 20px);
+  padding-right: var(--gutter, 20px);
+}
+.datechip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  min-width: 46px;
+  padding: 6px 8px 5px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .16);
+}
+.datechip b { display: block; font-size: 18px; letter-spacing: -0.04em; }
+.datechip small {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.badge.corner { left: auto; right: 10px; }
+.price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  font-weight: 800;
+}
+.price .when { font-weight: 600; color: var(--muted); font-size: 12px; }
+.buybar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 12px clamp(16px, 3vw, 40px) calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, .96);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+body:has(.buybar) { padding-bottom: 88px; }
+.buybar b { display: block; font-size: 18px; letter-spacing: -0.03em; }
+.buybar span { color: var(--muted); font-size: 13px; }
+.buybar .note { margin: 0; }
+html[data-theme="dark"] body.canvas { background: #000; }
+html[data-theme="dark"] .std-nav,
+html[data-theme="dark"] .buybar { background: rgba(12, 12, 12, .94); border-color: #242424; color: #fff; }
+html[data-theme="dark"] .datechip { background: #141414; color: #fff; }
+html[data-theme="dark"] .datechip small,
+html[data-theme="dark"] .price .when,
+html[data-theme="dark"] .buybar span { color: #b7c7bf; }

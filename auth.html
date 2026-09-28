@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ui.css">
   <style>
     :root { --green: #0c3d2e; --green-dark: #07261c; --ink: #0a0a0a; --muted: #5e6561; --line: #e6e8e6; --soft: #f4f6f5; }
     * { box-sizing: border-box; }
@@ -251,34 +252,22 @@
     document.querySelectorAll(".social").forEach((button) => {
       button.addEventListener("click", () => {
         const provider = button.dataset.provider;
-        const email = form.email.value.trim().toLowerCase();
-        const name = form.name.value.trim();
-        const list = users();
-        if (!email || !email.includes("@")) {
-          mode = "signup";
-          paint();
-          note.textContent = "Add your name and email, then continue with " + provider + ".";
-          form.email.focus();
-          return;
-        }
-        const existing = list.find((user) => user.email === email);
-        if (existing) {
-          existing.provider = provider;
-          saveUsers(list);
-          finish(existing);
-          return;
-        }
-        if (name.length < 2) {
-          mode = "signup";
-          paint();
-          note.textContent = "Add your name, then continue with " + provider + ".";
-          form.name.focus();
-          return;
-        }
-        const user = { name, email, password: "social-" + provider, provider, profile: false };
+        const user = {
+          name: "Amara N.",
+          email: "amara@timwork.sports",
+          password: "demo",
+          provider,
+          profile: true,
+          sports: ["Football"],
+          role: "Fan",
+          city: "Kampala",
+          heard: "App"
+        };
+        const list = users().filter((item) => item.email !== user.email);
         list.push(user);
         saveUsers(list);
-        showFollow(user);
+        sessionFor(user);
+        location.href = "timworksports.html";
       });
     });
 

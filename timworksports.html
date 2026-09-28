@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ui.css">
+  <script>document.documentElement.dataset.theme = localStorage.getItem("timwork_theme") || "light";</script>
   <script>
     try {
       const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
@@ -270,6 +272,22 @@
     .fine { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 16px; border-top: 1px solid #242424; color: #9a9a9a; font-size: 12px; }
     .fine nav { display: flex; gap: 14px; }
     .note { min-height: 1.2em; font-size: 13px; color: var(--green-dark); margin: 8px 0 0; }
+    .rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 260px); gap: 12px; overflow-x: auto; margin-top: 16px; padding-bottom: 6px; }
+    .join { margin-top: 10px; }
+    .notices { position: absolute; top: 64px; right: 0; width: min(360px, 90vw); background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px; z-index: 6; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+    .notices[hidden] { display: none; }
+    .notices article { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .notices article:last-child { border-bottom: 0; }
+    .notices strong { display: block; }
+    .create { display: grid; grid-template-columns: 1.4fr .8fr .8fr 1fr .7fr .6fr auto; gap: 8px; margin-top: 14px; }
+    .create input, .create select { border: 1px solid var(--line); border-radius: 12px; padding: 12px; width: 100%; background: #fff; }
+    .dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #1f8a4c; top: 8px; right: 8px; }
+    html[data-theme="dark"] body, html[data-theme="dark"] .sheet { background: #000; color: #fff; }
+    html[data-theme="dark"] .card, html[data-theme="dark"] .rank, html[data-theme="dark"] .menu, html[data-theme="dark"] .notices, html[data-theme="dark"] .pill, html[data-theme="dark"] .icon-btn, html[data-theme="dark"] .panel, html[data-theme="dark"] dialog { background: #141414; color: #fff; }
+    html[data-theme="dark"] .muted, html[data-theme="dark"] .card-body p, html[data-theme="dark"] .about p { color: #9a9a9a; }
+    html[data-theme="dark"] .create input, html[data-theme="dark"] .create select { background: #1c1c1c; color: #fff; border-color: #2a2a2a; }
+    html[data-theme="dark"] .hero-copy { background: #141414; }
+    html[data-theme="dark"] .icon-btn svg path { stroke: #fff; }
     dialog { border: 0; border-radius: 24px; padding: 0; width: min(480px, calc(100% - 32px)); }
     dialog::backdrop { background: rgba(10, 20, 14, .45); }
     .modal { padding: 22px; }
@@ -282,7 +300,10 @@
     .cover { height: 160px; border-radius: 16px; background: #ddd center/cover no-repeat; margin-bottom: 12px; }
     #dlgSizeWrap { display: grid; gap: 6px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
     #dlgSizeWrap[hidden] { display: none; }
-    #dlgSize { border: 1px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; }
+    #dlgSize, #checkoutFields input { border: 1px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; width: 100%; background: #fff; color: inherit; }
+    #checkoutFields { display: grid; gap: 8px; margin: 12px 0; }
+    #checkoutFields[hidden] { display: none; }
+    #checkoutFields label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
     @media (max-width: 980px) {
       .nav { grid-template-columns: auto 1fr auto; }
       .nav-left .pill, #logout, .nav-right .btn-green { display: none; }
@@ -306,13 +327,14 @@
       .coach { grid-template-columns: 72px 1fr; }
       .fine, .news form { flex-direction: column; }
       .block-head, .split-head { flex-direction: column; align-items: flex-start; }
+      .create { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body>
+<body class="canvas">
   <div class="frame">
     <div class="sheet">
-      <header class="nav">
+      <header class="nav std-nav">
         <div class="nav-left">
           <button class="icon-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="#121212" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -320,11 +342,16 @@
           <a class="pill" href="#events">Events</a>
           <a class="pill" href="#coaches">Coaches</a>
           <nav class="menu" id="menu">
+            <a href="feed.html">Feed</a>
+            <a href="detail.html?type=you">You</a>
             <a href="#events">Events</a>
             <a href="#coaches">Coaches</a>
             <a href="#merch">Merch</a>
+            <a href="#clubs">Clubs</a>
+            <a href="#profiles">Athletes</a>
             <a href="#rankings">Rankings</a>
             <a href="#ads">Ads</a>
+            <button type="button" id="menuTheme">Dark mode</button>
             <button type="button" id="menuLogout">Log out</button>
           </nav>
         </div>
@@ -333,7 +360,13 @@
           Timwork <small>SPORTS</small>
         </a>
         <div class="nav-right">
-          <span class="pill" id="who"></span>
+          <button class="icon-btn" id="bell" type="button" aria-label="Notifications" style="position:relative">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9Z" stroke="currentColor" stroke-width="1.8"/><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="dot" id="bellDot"></span>
+          </button>
+          <div class="notices" id="notices" hidden></div>
+          <a class="pill" href="feed.html">Feed</a>
+          <a class="pill" id="who" href="detail.html?type=you"></a>
           <button class="linkish" id="bagBtn" type="button">Bag</button>
           <button class="linkish" id="logout" type="button">Log out</button>
           <a class="btn btn-green" href="#rankings">Rankings</a>
@@ -343,8 +376,8 @@
       <section class="hero" aria-label="Next match">
         <div class="hero-copy">
           <div>
-            <p class="kicker">Crested Pass</p>
-            <h1>Upcoming sports. Buy tickets.</h1>
+            <p class="kicker">Timwork Sports</p>
+            <h1>Clubs, athletes, and the game.</h1>
           </div>
           <a class="btn btn-light" href="#events">See the card</a>
           <svg class="ball" viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="70" fill="#0c3d2e"/><path d="M28 48c28 10 40 10 62-18M34 118c26-12 48-12 70 22" stroke="#fff" stroke-width="3" fill="none"/></svg>
@@ -365,7 +398,7 @@
         </div>
         <div class="about">
           <div class="about-label">From the app</div>
-          <p>The same card as Crested Pass: football, basketball, tennis, boxing, swimming, and athletics. Tickets, coaches, and rankings sit under one login.</p>
+          <p>Join a club, follow an athlete, open their training report, book a coach, order kit, or host a session.</p>
         </div>
       </section>
 
@@ -375,11 +408,37 @@
         <article class="stat"><div class="stat-top">UGX 84,000</div><p>Amara N.’s wallet in the app. Ticket prices below come off that balance.</p></article>
       </section>
 
+      <section class="block" id="clubs">
+        <div class="block-head">
+          <h2>Clubs</h2>
+          <p class="muted" id="clubCount">0 joined</p>
+        </div>
+        <div class="rail" id="clubRail"></div>
+      </section>
+
+      <section class="block" id="profiles">
+        <div class="block-head">
+          <h2>Player profiles</h2>
+          <a class="btn btn-green" href="#rankings">All athletes</a>
+        </div>
+        <div class="rail" id="playerRail"></div>
+      </section>
+
       <section class="block" id="events">
         <div class="block-head">
           <h2>Sports events</h2>
           <div class="tabs" id="eventTabs"></div>
         </div>
+        <form class="create" id="createEvent">
+          <input name="title" required maxlength="80" placeholder="Event title" aria-label="Event title">
+          <select name="sport" id="createSport" aria-label="Sport"></select>
+          <input name="city" required value="Kampala" aria-label="City">
+          <input name="venue" required maxlength="80" placeholder="Venue" aria-label="Venue">
+          <input name="date" required value="Sat 4 Oct" aria-label="Date">
+          <input name="time" required value="16:00" aria-label="Time">
+          <button class="btn btn-green" type="submit">Create event</button>
+        </form>
+        <p class="note" id="createNote"></p>
         <div class="event-grid" id="eventGrid"></div>
       </section>
 
@@ -402,6 +461,7 @@
       <section class="block" id="rankings">
         <div class="split-head">
           <h2>Athlete rankings</h2>
+          <a class="btn btn-green" id="openSport" href="detail.html?type=sport&name=Football">Open Football</a>
           <div class="tabs" id="rankTabs"></div>
         </div>
         <div class="panel" id="rankList"></div>
@@ -474,6 +534,13 @@
       <label id="dlgSizeWrap" hidden>Size
         <select id="dlgSize"></select>
       </label>
+      <div id="checkoutFields" hidden>
+        <label>Full name<input id="shipName" maxlength="80" autocomplete="name"></label>
+        <label>Phone<input id="shipPhone" inputmode="tel" maxlength="20" placeholder="07XX XXX XXX" autocomplete="tel"></label>
+        <label>City<input id="shipCity" maxlength="40" value="Kampala"></label>
+        <label>Delivery address<input id="shipAddress" maxlength="160" placeholder="Street, area, and a landmark" autocomplete="street-address"></label>
+        <p class="muted">Pay on delivery. No card is taken in this prototype.</p>
+      </div>
       <p class="note" id="dlgNote"></p>
       <div class="modal-actions">
         <button class="btn pill" type="button" id="dlgClose">Close</button>
@@ -482,115 +549,9 @@
     </div>
   </dialog>
 
+  <script src="site.js"></script>
   <script>
-    const photos = {
-      Football: "images/ug-football.png",
-      Basketball: "images/ug-basketball.png",
-      Tennis: "images/ug-tennis.png",
-      Boxing: "images/ug-boxing.png",
-      Swimming: "images/ug-swim.png",
-      Athletics: "images/ug-track.png"
-    };
-
-    const events = [
-      { id: "ev-foot", title: "Uganda vs Senegal", sport: "Football", date: "14 Jun", time: "19:00", city: "Kampala", venue: "Nakivubo Stadium", price: 45000, hours: 54 },
-      { id: "ev-bball", title: "Cranes vs Kenya", sport: "Basketball", date: "15 Jun", time: "18:00", city: "Kampala", venue: "Lugogo Arena", price: 25000, hours: 78 },
-      { id: "ev-foot2", title: "Kenya vs Tanzania", sport: "Football", date: "16 Jun", time: "16:00", city: "Kampala", venue: "Mandela National Stadium", price: 35000, hours: 96 },
-      { id: "ev-tennis", title: "Kampala Open final", sport: "Tennis", date: "16 Jun", time: "15:00", city: "Kampala", venue: "Lugogo Tennis Club", price: 18000, hours: 98 },
-      { id: "ev-box", title: "East Africa Fight Night", sport: "Boxing", date: "17 Jun", time: "20:00", city: "Kampala", venue: "MTN Arena", price: 22000, hours: 126 },
-      { id: "ev-swim", title: "Nile Swim Cup", sport: "Swimming", date: "18 Jun", time: "10:00", city: "Kampala", venue: "Kampala Aquatic Centre", price: 12000, hours: 140 },
-      { id: "ev-track", title: "National Athletics Trials", sport: "Athletics", date: "19 Jun", time: "09:00", city: "Kampala", venue: "Mandela National Stadium", price: 8000, hours: 163 },
-      { id: "ev-tennis2", title: "Lakeside invitational", sport: "Tennis", date: "20 Jun", time: "14:00", city: "Entebbe", venue: "Botanical Gardens courts", price: 10000, hours: 192 }
-    ];
-
-    const coaches = [
-      { name: "Amina Okello", sport: "Football", role: "Head coach", years: 11, bio: "Builds the Cranes' match-week plan and the set-piece sheet for Nakivubo.", img: "images/ug-coach-amina.png" },
-      { name: "David Ssali", sport: "Basketball", role: "Head coach", years: 9, bio: "Runs the Lugogo offence and the national-team camp before the Kenya window.", img: "images/ug-coach-david.png" },
-      { name: "Grace Namutebi", sport: "Tennis", role: "High-performance coach", years: 8, bio: "Prepares the Kampala Open finalists and the lakeside invitational draw.", img: "images/ug-coach-grace.png" },
-      { name: "Joseph Kato", sport: "Boxing", role: "Head coach", years: 14, bio: "Corners the East Africa Fight Night card and the amateur undercard.", img: "images/ug-coach-joseph.png" },
-      { name: "Ruth Nakato", sport: "Swimming", role: "Head coach", years: 7, bio: "Sets the Nile Swim Cup warm-up and the sprint final lineup.", img: "images/ug-coach-ruth.png" },
-      { name: "Peter Mugisha", sport: "Athletics", role: "Sprints coach", years: 12, bio: "Calls the 100m trials and the photo-finish relays at Mandela.", img: "images/ug-coach-peter.png" }
-    ];
-
-    const ads = [
-      { brand: "Nile Cafe", place: "Nakivubo", line: "Match-day pours and a trail stamp.", detail: "Stamp + match-day menu. Open with the Uganda vs Senegal crowd.", img: "images/ug-cafe.png" },
-      { brand: "Nakasero craft market", place: "Nakasero", line: "Kampala's oldest market — crafts, coffee, and a trail partner stall.", detail: "Stamp + UTB-certified crafts.", img: "images/ug-market.png" },
-      { brand: "Entebbe Botanical Gardens", place: "Entebbe", line: "Next stamp on the trail, beside the lakeside invitational courts.", detail: "Trail partner · gardens and the 20 Jun tennis card.", img: "images/ug-gardens.png" },
-      { brand: "Source of the Nile", place: "Jinja", line: "Where the Nile begins. Partner check-in on the riverfront.", detail: "Trail partner · riverfront. Linked from the travel reel.", img: "images/ug-nile.png" }
-    ];
-
-    const merch = [
-      { id: "m1", name: "Training jersey", category: "Kit", price: 85000, detail: "Black and deep green match jersey. Breathable, club crest on the chest.", img: "images/ug-merch-jersey.png", sizes: ["S", "M", "L", "XL"] },
-      { id: "m2", name: "Coach shell", category: "Coaching", price: 120000, detail: "Sideline jacket for match week. Lightweight, deep green trim.", img: "images/ug-merch-shell.png", sizes: ["S", "M", "L", "XL"] },
-      { id: "m3", name: "Court hoodie", category: "Kit", price: 95000, detail: "Warm-up hoodie for indoor sessions and travel days.", img: "images/ug-merch-hoodie.png", sizes: ["S", "M", "L", "XL"] },
-      { id: "m4", name: "Match ball", category: "Training", price: 70000, detail: "Match-weight ball for coaching sessions and club finals.", img: "images/ug-merch-ball.png", sizes: ["Size 7"] },
-      { id: "m5", name: "Track singlet", category: "Kit", price: 45000, detail: "Race singlet for trials and club meets.", img: "images/ug-merch-singlet.png", sizes: ["XS", "S", "M", "L"] },
-      { id: "m6", name: "Session cap", category: "Training", price: 25000, detail: "Sun cap for outdoor coaching blocks.", img: "images/ug-merch-cap.png", sizes: ["One size"] }
-    ];
-
-    const sports = ["All", "Football", "Basketball", "Tennis", "Boxing", "Swimming", "Athletics"];
-    const palette = ["#0c3d2e", "#0a0a0a", "#145c43", "#1a1a1a", "#1f6b4a", "#12382c", "#2a2a2a"];
-
-    function ugx(amount) {
-      return "UGX " + amount.toLocaleString("en-US");
-    }
-    function countdown(hours) {
-      return Math.floor(hours / 24) + "d " + (hours % 24) + "h";
-    }
-    function initials(name) {
-      return name.split(" ").map((part) => part[0]).slice(0, 2).join("").toUpperCase();
-    }
-    function colorFor(name) {
-      let hash = 0;
-      for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
-      return palette[Math.abs(hash) % palette.length];
-    }
-
-    function roster() {
-      const first = ["Farouk","Sarah","Denis","Joan","Emmanuel","Patricia","Brian","Lydia","Mark","Isaac","Sharon","Moses","Claire","Joel","Anita","Joshua","Mercy","Samuel","Hannah","Peter","Amina","Daniel","Ruth","Joseph","Grace","David","Nora","Simon","Esther","Paul"];
-      const last = ["Magumba","Achieng","Wasswa","Nankya","Otim","Akello","Ssemakula","Nambi","Byaruhanga","Lubega","Atim","Waiswa","Mbabazi","Tumusiime","Kiconco","Adong","Ocen","Namara","Kato","Nakato","Mugisha","Okello","Ssali","Namutebi","Babirye","Ojok","Auma","Ssebugwawo","Nabirye","Opio"];
-      const specs = [
-        ["Football", 23, ["Striker","Midfielder","Defender","Goalkeeper","Winger"], ["Vipers SC","KCCA FC","SC Villa","URA FC"], "goals", 174],
-        ["Basketball", 15, ["Point guard","Shooting guard","Small forward","Power forward","Center"], ["City Oilers","Namuwongo Blazers","KCCA Leopards"], "points", 182],
-        ["Tennis", 12, ["Singles","Doubles"], ["Lugogo Club","Kampala Club","Entebbe Club"], "titles", 170],
-        ["Boxing", 10, ["Welterweight","Featherweight","Light heavyweight","Flyweight","Middleweight"], ["MTN Arena","Nakivubo gym","Lugogo gym"], "wins", 168],
-        ["Swimming", 18, ["Freestyle","Butterfly","Backstroke","Breaststroke"], ["Kampala Aquatic Centre","Nile Swim Club"], "medals", 172],
-        ["Athletics", 28, ["100m","1500m","Long jump","400m","Marathon","High jump"], ["Mandela Track Club","Kampala Distance","Jinja Athletics"], "medals", 168]
-      ];
-      const cities = ["Kampala","Entebbe","Jinja","Gulu"];
-      const used = new Set();
-      const out = [];
-      specs.forEach((spec, sportIndex) => {
-        const [sport, count, positions, clubs, scoreLabel, heightBase] = spec;
-        for (let i = 0; i < count; i++) {
-          let shift = 0;
-          let name = "";
-          do {
-            const fi = (i * 3 + sportIndex * 5 + shift) % first.length;
-            const li = (i * 2 + sportIndex * 7 + shift) % last.length;
-            name = first[fi] + " " + last[li];
-            shift += 1;
-          } while (used.has(name) && shift < 40);
-          used.add(name);
-          const appearances = 6 + (i * 2) % 22;
-          const scoring = (i * 3 + sportIndex) % 18;
-          const city = cities[(i + sportIndex) % cities.length];
-          const position = positions[i % positions.length];
-          const club = clubs[i % clubs.length];
-          out.push({
-            name, sport, position, club, city,
-            nationality: "Uganda",
-            age: 18 + (i * 3 + sportIndex) % 15,
-            number: 1 + (i * 7 + sportIndex) % 99,
-            heightCm: heightBase + (i * 2) % 18,
-            appearances, scoring, scoreLabel,
-            bio: name + " is a " + position + " for " + club + ". " + appearances + " appearances this season, based in " + city + "."
-          });
-        }
-      });
-      return out;
-    }
-
+    const { photos, events, coaches, ads, merch, sports, ugx, countdown, initials, colorFor, roster, eventPhoto } = Timwork;
     const players = roster();
     let eventSport = "All";
     let rankSport = "Football";
@@ -598,7 +559,7 @@
     let pendingTicket = null;
     let pendingMerch = null;
     let merchCategory = "All";
-    let bag = [];
+    let bag = Timwork.loadBag();
 
     function renderTabs(root, current, onPick) {
       root.innerHTML = sports.map((sport) => `<button class="sport-tab${sport === current ? " on" : ""}" type="button" data-sport="${sport}">${sport}</button>`).join("");
@@ -610,19 +571,25 @@
     }
 
     function renderEvents() {
-      const list = events.filter((item) => eventSport === "All" || item.sport === eventSport);
+      const list = Timwork.allEvents().filter((item) => eventSport === "All" || item.sport === eventSport);
       const visible = showAllEvents || eventSport !== "All" ? list : list.slice(0, 4);
-      document.getElementById("eventGrid").innerHTML = visible.map((item) => `
+      document.getElementById("eventGrid").innerHTML = visible.map((item) => {
+        const parts = String(item.date || "").split(/\s+/);
+        const day = /^[A-Za-z]/.test(parts[0] || "") ? (parts[1] || "") : (parts[0] || "");
+        const month = (/^[A-Za-z]/.test(parts[0] || "") ? (parts[2] || parts[0]) : (parts[1] || "")).slice(0, 3);
+        return `
         <button class="card" type="button" data-event="${item.id}">
-          <div class="card-photo" style="background-image:url('${({ "ev-foot2": "images/ug-stadium.png", "ev-tennis2": "images/ug-gardens.png" })[item.id] || photos[item.sport]}')">
-            <span class="badge">${item.sport}</span>
+          <div class="card-photo" style="background-image:url('${eventPhoto(item)}')">
+            <span class="datechip"><b>${day}</b><small>${month}</small></span>
+            <span class="badge corner">${item.sport}</span>
           </div>
           <div class="card-body">
             <strong>${item.title}</strong>
-            <p>${item.date} · ${item.time}<br>${item.venue}, ${item.city}</p>
-            <div class="price">${ugx(item.price)} · ${countdown(item.hours)}</div>
+            <p>${item.venue}, ${item.city}</p>
+            <div class="price"><span>${item.price ? ugx(item.price) : "Open"}</span><span class="when">${item.time} · ${countdown(item.hours)}</span></div>
           </div>
-        </button>`).join("") + (list.length > visible.length ? `<button class="card" type="button" id="moreEvents"><div class="card-body"><strong>View all ${list.length}</strong><p>The rest of this window’s card.</p></div></button>` : "");
+        </button>`;
+      }).join("") + (list.length > visible.length ? `<button class="card" type="button" id="moreEvents"><div class="card-body"><strong>View all ${list.length}</strong><p>The rest of this window’s card.</p></div></button>` : "");
     }
 
     function renderCoaches() {
@@ -632,7 +599,7 @@
           <div class="coach-body">
             <span>${person.sport}</span>
             <strong>${person.name}</strong>
-            <p>${person.role} · ${person.years} years</p>
+            <p>${person.rating} · ${Timwork.coachRecord(person)} · ${person.years} yrs</p>
           </div>
         </button>`).join("");
     }
@@ -641,13 +608,16 @@
       const list = players
         .filter((player) => player.sport === rankSport)
         .sort((a, b) => b.scoring - a.scoring || b.appearances - a.appearances || a.name.localeCompare(b.name));
+      const openSport = document.getElementById("openSport");
+      openSport.href = Timwork.page("sport", { name: rankSport });
+      openSport.textContent = "Open " + rankSport;
       document.getElementById("rankList").innerHTML = list.map((player, index) => {
         const unit = player.scoring === 1 ? player.scoreLabel.slice(0, -1) : player.scoreLabel;
         return `
         <button class="rank" type="button" data-player="${player.sport}|${player.name}">
           <b>${index + 1}</b>
           <span class="avatar" style="background:${colorFor(player.name)}">${initials(player.name)}</span>
-          <span><strong>${player.name}</strong><p class="muted">${player.position} · #${player.number}</p></span>
+          <span><strong>${player.name}</strong><p class="muted">${player.club} · ${Timwork.activitiesFor(player).length} activities</p></span>
           <span class="club muted">${player.club}</span>
           <span class="score">${player.scoring}<small>${unit}</small></span>
         </button>`;
@@ -674,6 +644,7 @@
       document.getElementById("dlgFacts").innerHTML = (facts || []).map(([label, value]) => `<div><small>${label}</small><strong>${value}</strong></div>`).join("");
       document.getElementById("dlgNote").textContent = "";
       document.getElementById("dlgSizeWrap").hidden = true;
+      document.getElementById("checkoutFields").hidden = true;
       const coverEl = document.getElementById("dlgCover");
       if (cover) {
         coverEl.hidden = false;
@@ -698,72 +669,30 @@
       }
       const card = event.target.closest("[data-event]");
       if (!card) return;
-      pendingMerch = null;
-      pendingTicket = events.find((item) => item.id === card.dataset.event);
-      openDialog({
-        kicker: pendingTicket.sport,
-        title: pendingTicket.title,
-        body: pendingTicket.venue + ", " + pendingTicket.city + ". Starts in " + countdown(pendingTicket.hours) + ".",
-        cover: photos[pendingTicket.sport],
-        facts: [["When", pendingTicket.date + " · " + pendingTicket.time], ["Price", ugx(pendingTicket.price)], ["Gate", "Gate 4"], ["Seat", "Held at purchase"]],
-        action: "Hold ticket"
-      });
+      location.href = Timwork.page("event", { id: card.dataset.event });
     });
 
     document.getElementById("coachGrid").addEventListener("click", (event) => {
       const card = event.target.closest("[data-coach]");
       if (!card) return;
-      const person = coaches[Number(card.dataset.coach)];
-      pendingTicket = null;
-      openDialog({
-        kicker: person.role + " · " + person.sport,
-        title: person.name,
-        body: person.bio,
-        cover: person.img,
-        facts: [["Years", String(person.years)], ["Sport", person.sport]]
-      });
+      location.href = Timwork.page("coach", { name: coaches[Number(card.dataset.coach)].name });
     });
 
     document.getElementById("rankList").addEventListener("click", (event) => {
       const row = event.target.closest("[data-player]");
       if (!row) return;
       const [sport, name] = row.dataset.player.split("|");
-      const player = players.find((item) => item.sport === sport && item.name === name);
-      const ranked = players.filter((item) => item.sport === sport).sort((a, b) => b.scoring - a.scoring || b.appearances - a.appearances);
-      const place = ranked.findIndex((item) => item.name === name) + 1;
-      pendingTicket = null;
-      openDialog({
-        kicker: "Rank " + place + " · " + player.sport,
-        title: player.name,
-        body: player.bio,
-        facts: [
-          [player.scoreLabel[0].toUpperCase() + player.scoreLabel.slice(1), String(player.scoring)],
-          ["Club", player.club],
-          ["Position", player.position],
-          ["City", player.city],
-          ["Age", String(player.age)],
-          ["Number", "#" + player.number],
-          ["Height", player.heightCm + " cm"],
-          ["Appearances", String(player.appearances)]
-        ]
-      });
+      location.href = Timwork.page("athlete", { sport, name });
     });
 
     document.getElementById("adGrid").addEventListener("click", (event) => {
       const card = event.target.closest("[data-ad]");
       if (!card) return;
-      const ad = ads[Number(card.dataset.ad)];
-      pendingTicket = null;
-      openDialog({
-        kicker: "Sponsored · " + ad.place,
-        title: ad.brand,
-        body: ad.detail,
-        cover: ad.img,
-        facts: [["Placement", "Discover and Home"], ["Offer", ad.line]]
-      });
+      location.href = Timwork.page("place", { id: ads[Number(card.dataset.ad)].id });
     });
 
     function bagLabel() {
+      Timwork.saveBag(bag);
       const count = bag.reduce((sum, item) => sum + item.qty, 0);
       document.getElementById("bagBtn").textContent = count ? "Bag (" + count + ")" : "Bag";
     }
@@ -794,19 +723,7 @@
     document.getElementById("merchGrid").addEventListener("click", (event) => {
       const card = event.target.closest("[data-merch]");
       if (!card) return;
-      pendingTicket = null;
-      pendingMerch = merch.find((item) => item.id === card.dataset.merch);
-      const select = document.getElementById("dlgSize");
-      select.innerHTML = pendingMerch.sizes.map((size) => `<option>${size}</option>`).join("");
-      openDialog({
-        kicker: pendingMerch.category,
-        title: pendingMerch.name,
-        body: pendingMerch.detail,
-        cover: pendingMerch.img,
-        facts: [["Price", ugx(pendingMerch.price)], ["Sizes", pendingMerch.sizes.join(" · ")]],
-        action: "Add to bag"
-      });
-      document.getElementById("dlgSizeWrap").hidden = false;
+      location.href = Timwork.page("merch", { id: card.dataset.merch });
     });
 
     document.getElementById("bagBtn").addEventListener("click", () => {
@@ -821,9 +738,13 @@
         kicker: "Shop",
         title: "Bag",
         body: bag.map((item) => item.qty + " × " + item.name + " (" + item.size + ")").join(", "),
-        facts: [["Total", ugx(total)]],
+        facts: [["Total", ugx(total)], ["Payment", "Pay on delivery"]],
         action: "Place order"
       });
+      const session = JSON.parse(localStorage.getItem("timwork_session") || "{}");
+      document.getElementById("checkoutFields").hidden = false;
+      document.getElementById("shipName").value = session.name || "";
+      document.getElementById("shipCity").value = session.city || "Kampala";
     });
 
     dlgAction.addEventListener("click", () => {
@@ -838,11 +759,21 @@
         return;
       }
       if (dlgAction.textContent === "Place order") {
+        const shipName = document.getElementById("shipName").value.trim();
+        const phone = document.getElementById("shipPhone").value.trim();
+        const city = document.getElementById("shipCity").value.trim();
+        const address = document.getElementById("shipAddress").value.trim();
+        if (shipName.length < 2 || phone.replace(/\D/g, "").length < 9 || city.length < 2 || address.length < 5) {
+          document.getElementById("dlgNote").textContent = "Add your name, a phone number, city, and delivery address.";
+          return;
+        }
         const total = bag.reduce((sum, item) => sum + item.price * item.qty, 0);
-        document.getElementById("dlgNote").textContent = "Order placed for " + holder + " · " + ugx(total) + ".";
+        const ref = "TW-" + String(bag.length + 1).padStart(4, "0");
+        document.getElementById("dlgNote").textContent = ref + " · " + ugx(total) + " · " + shipName + " · " + phone + " · " + address + ", " + city + ". Delivery in 2–4 days. Pay on delivery.";
         bag = [];
         bagLabel();
         dlgAction.hidden = true;
+        document.getElementById("checkoutFields").hidden = true;
         return;
       }
       if (!pendingTicket) return;
@@ -865,6 +796,107 @@
       event.preventDefault();
       document.getElementById("newsNote").textContent = "You’re on the match-week list.";
       event.target.reset();
+    });
+
+    function renderHome() {
+      const social = Timwork.loadSocial();
+      const clubs = Timwork.clubsFor(players);
+      document.getElementById("clubCount").textContent = social.follows.filter((key) => key.startsWith("club:")).length + " joined";
+      document.getElementById("clubRail").innerHTML = clubs.map((club) => {
+        const joined = social.follows.includes("club:" + club.name);
+        return `<article class="card">
+          <a href="${Timwork.page("club", { name: club.name })}">
+            <div class="card-photo" style="background-image:url('${club.img}')"></div>
+            <div class="card-body">
+              <strong>${club.name}</strong>
+              <p>${club.sport} · ${club.city}<br>${club.members} on the side</p>
+            </div>
+          </a>
+          <div class="card-body" style="padding-top:0"><button class="btn btn-green join" type="button" data-join="${club.name}">${joined ? "Joined" : "Join"}</button></div>
+        </article>`;
+      }).join("");
+      document.getElementById("playerRail").innerHTML = Timwork.featuredAthletes(players).map((player) => {
+        const key = "athlete:" + player.sport + ":" + player.name;
+        const following = social.follows.includes(key);
+        const challenged = social.challenges.includes(key);
+        return `<article class="card">
+          <a href="${Timwork.page("athlete", { sport: player.sport, name: player.name })}">
+            <div class="card-photo" style="background-image:url('${Timwork.photos[player.sport]}')"></div>
+            <div class="card-body">
+              <strong>${player.name}</strong>
+              <p>${player.sport}<br>${player.club}</p>
+            </div>
+          </a>
+          <div class="card-body" style="padding-top:0;display:flex;gap:8px">
+            <button class="btn ${following ? "pill" : "btn-green"} join" type="button" data-follow="${player.sport}|${player.name}">${following ? "Following" : "Follow"}</button>
+            <button class="pill join" type="button" data-challenge="${player.sport}|${player.name}">${challenged ? "Challenged" : "Challenge"}</button>
+          </div>
+        </article>`;
+      }).join("");
+    }
+    document.getElementById("clubRail").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-join]");
+      if (!button) return;
+      const social = Timwork.loadSocial();
+      const key = "club:" + button.dataset.join;
+      const index = social.follows.indexOf(key);
+      if (index >= 0) social.follows.splice(index, 1);
+      else social.follows.push(key);
+      Timwork.saveSocial(social);
+      renderHome();
+    });
+    document.getElementById("playerRail").addEventListener("click", (event) => {
+      const follow = event.target.closest("[data-follow]");
+      const challenge = event.target.closest("[data-challenge]");
+      const button = follow || challenge;
+      if (!button) return;
+      const [sport, name] = (follow ? follow.dataset.follow : challenge.dataset.challenge).split("|");
+      const key = "athlete:" + sport + ":" + name;
+      const social = Timwork.loadSocial();
+      const list = follow ? social.follows : social.challenges;
+      const index = list.indexOf(key);
+      if (index >= 0) list.splice(index, 1);
+      else list.push(key);
+      Timwork.saveSocial(social);
+      renderHome();
+    });
+    document.getElementById("createSport").innerHTML = ["Football", "Basketball", "Tennis", "Boxing", "Swimming", "Athletics"].map((name) => `<option>${name}</option>`).join("");
+    document.getElementById("createEvent").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(event.target);
+      const title = String(data.get("title")).trim();
+      Timwork.createEvent({
+        id: "ev-" + Date.now(),
+        title,
+        sport: String(data.get("sport")),
+        city: String(data.get("city")).trim(),
+        venue: String(data.get("venue")).trim(),
+        date: String(data.get("date")).trim(),
+        time: String(data.get("time")).trim(),
+        price: 0,
+        hours: 12
+      });
+      document.getElementById("createNote").textContent = title + " is on the card. Entry is open.";
+      event.target.title.value = "";
+      event.target.venue.value = "";
+      renderEvents();
+    });
+    const notices = document.getElementById("notices");
+    notices.innerHTML = Timwork.notices.map((item) => `<article><strong>${item.title}</strong><p class="muted">${item.detail} · ${item.when}</p></article>`).join("");
+    document.getElementById("bell").addEventListener("click", () => {
+      notices.hidden = !notices.hidden;
+      document.getElementById("bellDot").hidden = true;
+    });
+    function applyTheme(next) {
+      localStorage.setItem("timwork_theme", next);
+      document.documentElement.dataset.theme = next;
+      const label = document.getElementById("menuTheme");
+      if (label) label.textContent = next === "dark" ? "Light mode" : "Dark mode";
+    }
+    applyTheme(localStorage.getItem("timwork_theme") || "light");
+    document.getElementById("menuTheme").addEventListener("click", (event) => {
+      event.stopPropagation();
+      applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
     });
 
     function bindEventTabs() {
@@ -903,6 +935,7 @@
     renderRanks();
     renderAds();
     renderMerch();
+    renderHome();
     bagLabel();
   </script>
 </body>

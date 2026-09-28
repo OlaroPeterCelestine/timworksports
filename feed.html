@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feed · Timwork Sports</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ui.css">
+  <script>
+    try {
+      const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
+      if (!gate || !gate.email) location.replace("auth.html?mode=login");
+    } catch (error) {
+      location.replace("auth.html?mode=login");
+    }
+  </script>
+  <script src="site.js"></script>
+  <style>
+    :root { --green: #0c3d2e; --green-dark: #07261c; --ink: #0a0a0a; --muted: #5e6561; --line: #eceeed; --soft: #f4f6f5; --gutter: clamp(16px, 3vw, 40px); }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--ink); background: var(--soft); overflow-x: clip; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 8px var(--gutter); background: #fff; min-width: 0; }
+    .nav-right { min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.04em; font-size: 20px; }
+    .brand small { color: var(--green); font-size: 11px; letter-spacing: .14em; }
+    .nav-right, .nav-links { display: flex; align-items: center; gap: 8px; }
+    .btn, .pill { border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; background: #fff; }
+    .btn-green { background: var(--green); color: #fff; }
+    .pill { background: var(--soft); }
+    .pill.on { background: var(--green); color: #fff; }
+    .linkish { background: transparent; border: 0; font-weight: 700; }
+    .wrap { width: min(720px, 100%); margin: 0 auto; padding: 18px var(--gutter) 48px; }
+    .card { background: #fff; border-radius: 22px; padding: 16px; margin-bottom: 12px; box-shadow: 0 0 0 1px rgba(0,0,0,.05); }
+    h1 { margin: 0 0 6px; letter-spacing: -0.04em; font-size: 32px; }
+    .muted { color: var(--muted); margin: 0 0 14px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .composer, .row { display: grid; gap: 8px; }
+    input, select { border: 1px solid var(--line); border-radius: 12px; padding: 12px; width: 100%; }
+    .who { display: flex; gap: 10px; align-items: center; }
+    .avatar { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-weight: 800; background: #0c3d2e center/cover no-repeat; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 14px; margin: 10px 0; }
+    .metrics strong { display: block; font-size: 20px; letter-spacing: -0.03em; }
+    .metrics span { color: var(--muted); font-size: 12px; }
+    .ghost { border: 0; background: var(--soft); border-radius: 999px; padding: 8px 12px; font-weight: 700; }
+    .ghost.on { background: var(--green); color: #fff; }
+    .suggest { display: flex; gap: 8px; overflow: auto; padding-bottom: 4px; }
+    .suggest a { min-width: 140px; background: var(--soft); border-radius: 16px; padding: 12px; }
+    @media (max-width: 680px) {
+      .brand small { display: none; }
+      .nav { gap: 6px; }
+      .nav-right, .nav-links { gap: 4px; }
+      .brand { font-size: 16px; }
+      .nav-links .pill, .linkish { padding: 8px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body class="canvas">
+  <header class="nav std-nav">
+    <a class="brand" href="timworksports.html">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#0c3d2e"/><path d="M3 8c3 1 5 1 8-2M4 15c3-1 6-1 9 2" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+      Timwork <small>SPORTS</small>
+    </a>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a class="pill on" href="feed.html">Feed</a>
+        <a class="pill" href="timworksports.html">Card</a>
+        <a class="pill" href="detail.html?type=you">You</a>
+      </nav>
+      <button class="linkish" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <h1>Feed</h1>
+    <p class="muted" id="hello"></p>
+    <div class="filters" id="filters"></div>
+    <section class="card">
+      <form class="composer" id="log">
+        <strong>Log a session</strong>
+        <input name="title" required maxlength="80" placeholder="What did you do?">
+        <div class="row" style="grid-template-columns: 1fr 1fr;">
+          <input name="distance" placeholder="Distance">
+          <input name="minutes" type="number" min="1" required placeholder="Minutes">
+        </div>
+        <select name="sport" id="sportPick"></select>
+        <button class="btn btn-green" type="submit">Post to your feed</button>
+      </form>
+    </section>
+    <section class="card">
+      <strong>Suggested</strong>
+      <div class="suggest" id="suggest"></div>
+    </section>
+    <div id="list"></div>
+  </main>
+  <script>
+    const T = Timwork;
+    const me = T.session();
+    const players = T.roster();
+    const sportNames = ["All", "Football", "Basketball", "Tennis", "Boxing", "Swimming", "Athletics", "Following"];
+    let filter = "All";
+    document.getElementById("hello").textContent = "Sessions from the card" + (me.name ? ", " + me.name.split(" ")[0] : "") + ". Follow people and their next activities stay at the top.";
+    const yours = (me.sports && me.sports.length ? me.sports : sportNames.slice(1));
+    document.getElementById("sportPick").innerHTML = yours.map((name) => `<option>${name}</option>`).join("");
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    }
+    function catalog() {
+      const items = [];
+      sportNames.slice(1).forEach((sport) => {
+        T.byRank(players.filter((player) => player.sport === sport)).slice(0, 2).forEach((player) => {
+          const activity = T.activitiesFor(player)[0];
+          items.push({ player, activity, key: "activity:" + player.sport + ":" + player.name + ":0" });
+        });
+      });
+      return items;
+    }
+    function paint() {
+      const state = T.loadSocial();
+      document.getElementById("filters").innerHTML = sportNames.map((name) => `<button class="pill${name === filter ? " on" : ""}" type="button" data-filter="${esc(name)}">${esc(name)}</button>`).join("");
+      const mine = state.sessions.map((item, index) => ({
+        mine: true,
+        title: item.title,
+        when: item.at,
+        sport: item.sport,
+        stats: [[item.distance || "—", "distance"], [item.minutes + " min", "time"]],
+        href: T.page("session", { i: String(index) }),
+        profile: "detail.html?type=you",
+        name: me.name || "You",
+        initials: T.initials(me.name || "You"),
+        color: T.colorFor(me.name || "You"),
+        key: "you-session:" + item.at + item.title
+      }));
+      const cards = catalog().filter((item) => {
+        if (filter === "Following") return state.follows.includes("athlete:" + item.player.sport + ":" + item.player.name);
+        if (filter === "All") return true;
+        return item.player.sport === filter;
+      }).map((item) => ({
+        title: item.activity.title,
+        when: item.activity.when,
+        sport: item.player.sport,
+        stats: item.activity.stats.slice(0, 3),
+        href: T.page("activity", { sport: item.player.sport, name: item.player.name, i: "0" }),
+        profile: T.page("athlete", { sport: item.player.sport, name: item.player.name }),
+        name: item.player.name,
+        initials: T.initials(item.player.name),
+        color: T.colorFor(item.player.name),
+        key: item.key,
+        kudos: item.activity.kudos
+      }));
+      const shown = (filter === "All" || filter === "Following" ? mine : mine.filter((item) => item.sport === filter)).concat(cards);
+      document.getElementById("list").innerHTML = shown.length ? shown.map((item) => {
+        const given = !!state.likes[item.key];
+        const count = (item.kudos || 0) + (given ? 1 : 0);
+        return `<article class="card">
+          <a class="who" href="${item.profile || item.href}"><i class="avatar" style="background:${item.color}">${esc(item.initials)}</i><div><strong>${esc(item.name)}</strong><span class="muted">${esc(item.sport)} · ${esc(item.when)}</span></div></a>
+          <h2 style="margin:10px 0 0;font-size:22px"><a href="${item.href}">${esc(item.title)}</a></h2>
+          <div class="metrics">${item.stats.map(([value, label]) => `<span><strong>${esc(value)}</strong>${esc(label)}</span>`).join("")}</div>
+          <button class="ghost${given ? " on" : ""}" type="button" data-kudos="${esc(item.key)}">${given ? "Kudos given" : "Kudos"} · ${count}</button>
+        </article>`;
+      }).join("") : `<section class="card"><p>Nothing in this filter yet. Follow an athlete or log a session.</p></section>`;
+      const suggested = T.byRank(players).filter((player) => !state.follows.includes("athlete:" + player.sport + ":" + player.name)).slice(0, 8);
+      document.getElementById("suggest").innerHTML = suggested.map((player) => `<a href="${T.page("athlete", { sport: player.sport, name: player.name })}"><strong>${esc(player.name)}</strong><br><span class="muted">${esc(player.sport)} · ${esc(player.club)}</span></a>`).join("");
+    }
+    paint();
+    document.getElementById("filters").onclick = (event) => {
+      const button = event.target.closest("[data-filter]");
+      if (!button) return;
+      filter = button.dataset.filter;
+      paint();
+    };
+    document.getElementById("list").onclick = (event) => {
+      const button = event.target.closest("[data-kudos]");
+      if (!button) return;
+      const state = T.loadSocial();
+      if (state.likes[button.dataset.kudos]) delete state.likes[button.dataset.kudos];
+      else state.likes[button.dataset.kudos] = true;
+      T.saveSocial(state);
+      paint();
+    };
+    document.getElementById("log").onsubmit = (event) => {
+      event.preventDefault();
+      const state = T.loadSocial();
+      state.sessions.unshift({
+        title: event.target.title.value.trim(),
+        distance: event.target.distance.value.trim() || "—",
+        minutes: Number(event.target.minutes.value),
+        sport: event.target.sport.value,
+        at: "Just now",
+        kudos: 0
+      });
+      T.saveSocial(state);
+      event.target.reset();
+      paint();
+    };
+    document.getElementById("logout").onclick = () => {
+      localStorage.removeItem("timwork_session");
+      location.href = "index.html";
+    };
+  </script>
+</body>
+</html>

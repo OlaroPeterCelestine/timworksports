@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timwork Sports</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ui.css">
+  <script>document.documentElement.dataset.theme = localStorage.getItem("timwork_theme") || "light";</script>
+  <script>
+    try {
+      const gate = JSON.parse(localStorage.getItem("timwork_session") || "null");
+      if (!gate || !gate.email) location.replace("auth.html?mode=login");
+    } catch (error) {
+      location.replace("auth.html?mode=login");
+    }
+  </script>
+  <script src="site.js"></script>
+  <style>
+    :root { --green: #0c3d2e; --green-dark: #07261c; --ink: #0a0a0a; --muted: #5e6561; --line: #eceeed; --soft: #f4f6f5; --gutter: clamp(16px, 3vw, 40px); }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--ink); background: #fff; overflow-x: clip; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 8px var(--gutter); min-width: 0; }
+    .nav-right { min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.04em; font-size: 20px; }
+    .brand small { color: var(--green); font-size: 11px; letter-spacing: .14em; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .btn, .pill { border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover { background: var(--green-dark); }
+    .pill { background: var(--soft); }
+    .linkish { background: transparent; border: 0; font-weight: 700; padding: 10px 8px; }
+    .cover { height: min(42vw, 320px); min-height: 180px; background: #111 center/cover no-repeat; }
+    .sheet { width: min(1100px, 100%); margin: -48px auto 48px; padding: 0 var(--gutter); }
+    .profile { background: #fff; border-radius: 28px; box-shadow: 0 0 0 1px rgba(0,0,0,.06); padding: 22px; }
+    .who { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+    .avatar { width: 84px; height: 84px; border-radius: 24px; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 28px; background: #0c3d2e center/cover no-repeat; border: 4px solid #fff; margin-top: -58px; }
+    .who h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -0.045em; line-height: 1; }
+    .kicker { margin: 0 0 6px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .kicker a { text-decoration: underline; text-underline-offset: 3px; }
+    .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .bio { margin: 14px 0 0; color: var(--muted); max-width: 62ch; }
+    .stats { display: flex; gap: 0; margin-top: 18px; border: 1px solid var(--line); border-radius: 16px; overflow: auto; background: #fff; }
+    .stat { background: transparent; border-radius: 0; padding: 12px 16px; min-width: 108px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+    .stat b { display: block; font-size: 22px; letter-spacing: -0.04em; }
+    .stat span { color: var(--muted); font-size: 13px; }
+    .layout { display: grid; grid-template-columns: 1.4fr .8fr; gap: 16px; margin-top: 16px; }
+    .card { background: #fff; border-radius: 22px; box-shadow: 0 0 0 1px rgba(0,0,0,.06); padding: 16px; }
+    .card h2 { margin: 0 0 12px; font-size: 18px; letter-spacing: -0.03em; }
+    textarea, select, input { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: #fff; color: inherit; }
+    .checkout { display: grid; gap: 8px; margin-top: 16px; }
+    .checkout label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+    textarea { min-height: 84px; resize: vertical; }
+    .composer { display: grid; gap: 8px; }
+    .post { padding: 14px 0; border-top: 1px solid var(--line); }
+    .post strong { display: block; }
+    .post p { margin: 6px 0; }
+    .post time { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .post-actions { display: flex; gap: 8px; }
+    .ghost { border: 0; background: var(--soft); border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: 13px; }
+    .ghost.on { background: var(--green); color: #fff; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .zone { display: grid; grid-template-columns: 64px 1fr 40px; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; }
+    .zone i { display: block; height: 8px; border-radius: 4px; background: #8a8a8a; }
+    .zone i.gold { background: #1f8a4c; }
+    .zone i.hard { background: #c45c6a; }
+    button:disabled { opacity: .35; cursor: default; }
+    html[data-theme="dark"] body { background: #000; color: #fff; }
+    html[data-theme="dark"] .nav, html[data-theme="dark"] .profile, html[data-theme="dark"] .card { background: #141414; color: #fff; }
+    html[data-theme="dark"] .pill, html[data-theme="dark"] .ghost, html[data-theme="dark"] .stat { background: #1c1c1c; color: #fff; }
+    html[data-theme="dark"] .muted, html[data-theme="dark"] .bio, html[data-theme="dark"] .facts span, html[data-theme="dark"] .stat span { color: #9a9a9a; }
+    .person, .mini { display: grid; grid-template-columns: 46px 1fr; gap: 10px; align-items: center; padding: 8px 0; }
+    .person i, .mini i { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-style: normal; font-weight: 800; background: #0c3d2e center/cover no-repeat; }
+    .person span, .mini span { color: var(--muted); font-size: 13px; }
+    .mini { grid-template-columns: 72px 1fr; }
+    .mini i { width: 72px; height: 52px; border-radius: 12px; }
+    .facts { display: grid; gap: 8px; }
+    .facts div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .facts span { color: var(--muted); }
+    .note { min-height: 1.2em; color: var(--green); font-weight: 700; font-size: 14px; }
+    .weeks { display: flex; align-items: flex-end; gap: 4px; height: 78px; }
+    .weeks i { flex: 1; display: block; background: var(--green); border-radius: 4px 4px 0 0; opacity: .85; }
+    .act { display: block; padding: 12px 0; border-top: 1px solid var(--line); }
+    .act b { letter-spacing: -0.03em; }
+    .metrics { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+    .metrics strong { display: block; font-size: 18px; letter-spacing: -0.03em; }
+    .metrics span { color: var(--muted); font-size: 12px; }
+    .comments { list-style: none; margin: 8px 0 0; padding: 0; }
+    .comments li { font-size: 14px; padding: 4px 0; }
+    .comment { display: flex; gap: 8px; margin-top: 8px; }
+    .comment input { flex: 1; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; }
+    .splits { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .splits td { padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .nav-links { display: flex; gap: 6px; }
+    .missing { padding: 48px 0; }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      .actions { margin-left: 0; }
+      .brand small { display: none; }
+    }
+    @media (max-height: 720px) {
+      .cover { height: 168px; min-height: 140px; }
+    }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .cover { height: 200px; }
+      .nav { gap: 6px; }
+      .nav-right, .nav-links { gap: 4px; }
+      .brand { font-size: 16px; }
+      .nav-links .pill, .linkish { padding: 8px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body class="canvas">
+  <header class="nav std-nav">
+    <a class="brand" href="timworksports.html">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#0c3d2e"/><path d="M3 8c3 1 5 1 8-2M4 15c3-1 6-1 9 2" stroke="#fff" stroke-width="1.2" fill="none"/></svg>
+      Timwork <small>SPORTS</small>
+    </a>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a class="pill" href="feed.html">Feed</a>
+        <a class="pill" href="timworksports.html">Card</a>
+        <a class="pill" href="detail.html?type=you">You</a>
+      </nav>
+      <button class="linkish" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+  <div class="cover" id="cover"></div>
+  <main class="sheet" id="app"></main>
+  <script>
+    const T = Timwork;
+    const params = new URLSearchParams(location.search);
+    const type = params.get("type") || "";
+    const players = T.roster();
+    const me = T.session();
+    const app = document.getElementById("app");
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    }
+    function unit(player) {
+      return player.scoring === 1 ? player.scoreLabel.slice(0, -1) : player.scoreLabel;
+    }
+    function sportHref(name) {
+      return T.page("sport", { name });
+    }
+    function athleteHref(player) {
+      return T.page("athlete", { sport: player.sport, name: player.name });
+    }
+    function ranked(sport) {
+      return T.byRank(players.filter((player) => player.sport === sport));
+    }
+    function coachFor(sport) {
+      return T.coaches.find((coach) => coach.sport === sport);
+    }
+    function eventsFor(sport) {
+      return T.allEvents().filter((item) => item.sport === sport);
+    }
+
+    function build() {
+      if (type === "athlete") {
+        const player = players.find((item) => item.sport === params.get("sport") && item.name === params.get("name"));
+        if (!player) return null;
+        const board = ranked(player.sport);
+        const place = board.findIndex((item) => item.name === player.name) + 1;
+        const coach = coachFor(player.sport);
+        const mates = board.filter((item) => item.club === player.club && item.name !== player.name).slice(0, 4);
+        return {
+          key: "athlete:" + player.sport + ":" + player.name,
+          player,
+          title: player.name,
+          kicker: "Rank " + place + " · <a href=\"" + sportHref(player.sport) + "\">" + esc(player.sport) + "</a>",
+          cover: T.photos[player.sport],
+          avatar: T.colorFor(player.name),
+          initials: T.initials(player.name),
+          follow: "Follow",
+          following: "Following",
+          bio: player.bio + " Wears #" + player.number + " and stands " + player.heightCm + " cm.",
+          line: "Back on the " + player.sport.toLowerCase() + " card for " + player.club + ".",
+          challenge: true,
+          stats: [
+            [T.reportOf(T.activitiesFor(player)).km, "km"],
+            [T.reportOf(T.activitiesFor(player)).time, "time"],
+            [T.reportOf(T.activitiesFor(player)).sessions, "sessions"],
+            [T.reportOf(T.activitiesFor(player)).comps, "comps"],
+            ["#" + place, "of " + board.length]
+          ],
+          facts: [["Club", player.club], ["Position", player.position], ["City", player.city], ["Number", "#" + player.number], ["Height", player.heightCm + " cm"], ["Nationality", player.nationality]],
+          activities: T.activitiesFor(player),
+          weeks: T.weeks(player.name),
+          records: [["Season best", player.scoring + " " + unit(player)], ["Appearances", String(player.appearances)], ["Number", "#" + player.number]],
+          club: { href: T.page("club", { name: player.club }), name: player.club },
+          peopleTitle: "Teammates",
+          people: mates.map(personCard),
+          cardsTitle: "On the card",
+          cards: [
+            coach && { href: T.page("coach", { name: coach.name }), title: coach.name, meta: coach.role, img: coach.img },
+            ...eventsFor(player.sport).slice(0, 2).map(eventCard)
+          ].filter(Boolean)
+        };
+      }
+      if (type === "coach") {
+        const coach = T.coaches.find((item) => item.name === params.get("name"));
+        if (!coach) return null;
+        const squad = ranked(coach.sport).slice(0, 6);
+        return {
+          key: "coach:" + coach.name,
+          title: coach.name,
+          kicker: esc(coach.role) + " · <a href=\"" + sportHref(coach.sport) + "\">" + esc(coach.sport) + "</a>",
+          cover: coach.img,
+          avatarImg: coach.img,
+          follow: "Follow",
+          following: "Following",
+          bio: coach.bio + " " + coach.years + " years on the " + coach.sport.toLowerCase() + " programme.",
+          line: "Squad notes are up for the next " + coach.sport.toLowerCase() + " window.",
+          stats: [[coach.rating, "rating"], [T.coachRecord(coach), "record"], [T.coachWinRate(coach) + "%", "win rate"], [coach.years, "years"]],
+          facts: [["Licence", coach.licence], ["Clubs", coach.clubs], ["Role", coach.role], ["Sport", coach.sport]],
+          book: coach,
+          activities: T.activitiesFor(coach),
+          weeks: T.weeks(coach.name),
+          records: [["Years coaching", String(coach.years)], ["Programme", coach.sport], ["Squad shown", String(squad.length)]],
+          peopleTitle: "Athletes in the programme",
+          people: squad.map(personCard),
+          cardsTitle: "Matches",
+          cards: eventsFor(coach.sport).map(eventCard)
+        };
+      }
+      if (type === "event") {
+        const item = T.allEvents().find((eventItem) => eventItem.id === params.get("id"));
+        if (!item) return null;
+        const open = !item.price;
+        const coach = coachFor(item.sport);
+        return {
+          key: "event:" + item.id,
+          title: item.title,
+          kicker: "<a href=\"" + sportHref(item.sport) + "\">" + esc(item.sport) + "</a> · " + esc(item.city),
+          cover: T.eventPhoto(item),
+          follow: "I'm going",
+          following: "Going",
+          bio: open
+            ? item.venue + ", " + item.city + ". You created this session. Entry is open."
+            : item.venue + ", " + item.city + ". Kickoff in " + T.countdown(item.hours) + ". Tickets are " + T.ugx(item.price) + ".",
+          line: "Gates open for " + item.title + ". Who's in the stands?",
+          stats: [[item.date, item.time], [open ? "Open" : T.ugx(item.price), open ? "entry" : "ticket"], [item.city, "city"], [item.sport, "sport"]],
+          facts: [["Venue", item.venue], ["When", item.date + " · " + item.time], ["Entry", open ? "Open" : T.ugx(item.price)]],
+          peopleTitle: "Names on this card",
+          people: ranked(item.sport).slice(0, 5).map(personCard),
+          cardsTitle: "Also around this sport",
+          cards: [coach && { href: T.page("coach", { name: coach.name }), title: coach.name, meta: coach.role, img: coach.img }].filter(Boolean),
+          ticket: open ? null : item
+        };
+      }
+      if (type === "merch") {
+        const item = T.merch.find((product) => product.id === params.get("id"));
+        if (!item) return null;
+        return {
+          key: "merch:" + item.id,
+          title: item.name,
+          kicker: esc(item.category),
+          cover: item.img,
+          follow: "Save",
+          following: "Saved",
+          bio: item.detail,
+          line: item.name + " is in the shop this window.",
+          stats: [[T.ugx(item.price), "price"], [item.sizes.length, "sizes"], [item.category, "line"], ["Kampala", "ships"]],
+          facts: [["Price", T.ugx(item.price)], ["Sizes", item.sizes.join(" · ")]],
+          peopleTitle: "Worn on the card",
+          people: [],
+          cardsTitle: "More from the shop",
+          cards: T.merch.filter((product) => product.id !== item.id).slice(0, 4).map((product) => ({
+            href: T.page("merch", { id: product.id }), title: product.name, meta: T.ugx(product.price), img: product.img
+          })),
+          merch: item
+        };
+      }
+      if (type === "sport") {
+        const name = params.get("name");
+        if (!T.photos[name]) return null;
+        const coach = coachFor(name);
+        const board = ranked(name);
+        return {
+          key: "sport:" + name,
+          title: name,
+          kicker: "Sport",
+          cover: name === "Football" ? "images/ug-hero-match.png" : T.photos[name],
+          follow: "Follow",
+          following: "Following",
+          bio: name + " on the Uganda card: " + eventsFor(name).length + " events this window and " + board.length + " athletes on the rankings.",
+          line: name + " sessions are posted for the week.",
+          stats: [[board.length, "athletes"], [eventsFor(name).length, "events"], [coach ? coach.years : "—", "coach years"], [board[0] ? board[0].scoring : "—", board[0] ? unit(board[0]) : "top score"]],
+          facts: [["Home", "Uganda"], ["Coach", coach ? coach.name : "—"]],
+          peopleTitle: "Rankings",
+          people: board.slice(0, 8).map(personCard),
+          cardsTitle: "Events",
+          cards: eventsFor(name).map(eventCard).concat(coach ? [{ href: T.page("coach", { name: coach.name }), title: coach.name, meta: coach.role, img: coach.img }] : [])
+        };
+      }
+      if (type === "club") {
+        const name = params.get("name");
+        const members = T.byRank(players.filter((player) => player.club === name));
+        if (!members.length) return null;
+        const sport = members[0].sport;
+        return {
+          key: "club:" + name,
+          title: name,
+          kicker: esc(sport) + " club",
+          cover: T.photos[sport],
+          follow: "Join club",
+          following: "Joined",
+          bio: name + " is on the " + sport.toLowerCase() + " card. " + members.length + " athletes train and play out of this club.",
+          line: "Club session is up. See who posted from " + name + ".",
+          stats: [[members.length, "athletes"], [sport, "sport"], [members[0].city, "base"], [members[0].scoring, unit(members[0])]],
+          facts: [["Sport", sport], ["City", members[0].city], ["Top athlete", members[0].name]],
+          peopleTitle: "Roster",
+          people: members.slice(0, 12).map(personCard),
+          cardsTitle: "Next events",
+          cards: eventsFor(sport).map(eventCard),
+          activities: T.activitiesFor(members[0]).map((item, index) => Object.assign({}, item, { who: members[index % members.length] })),
+          weeks: T.weeks(name)
+        };
+      }
+      if (type === "activity") {
+        const player = players.find((item) => item.sport === params.get("sport") && item.name === params.get("name"));
+        const activity = player && T.activitiesFor(player)[Number(params.get("i"))];
+        if (!activity) return null;
+        return {
+          key: "activity:" + player.sport + ":" + player.name + ":" + activity.index,
+          title: activity.title,
+          kicker: "<a href=\"" + athleteHref(player) + "\">" + esc(player.name) + "</a> · " + esc(activity.when),
+          cover: T.photos[player.sport],
+          follow: "Kudos",
+          following: "Kudos given",
+          bio: activity.notes || (player.name + " logged " + activity.title.toLowerCase() + " in " + player.city + "."),
+          line: activity.title + " is on the " + player.sport.toLowerCase() + " feed.",
+          stats: activity.stats,
+          facts: [["Kind", activity.kind || "Training"], ["Pace", activity.pace || "—"], ["Avg heart rate", (activity.avgHr || "—") + " bpm"], ["Max heart rate", (activity.maxHr || "—") + " bpm"], ["Elevation", (activity.elevationM || 0) + " m"], ["Effort", (activity.effort || "—") + " / 10"], ["Athlete", player.name], ["Club", player.club]],
+          peopleTitle: "With",
+          people: ranked(player.sport).filter((item) => item.club === player.club && item.name !== player.name).slice(0, 3).map(personCard),
+          cardsTitle: "More from " + player.name,
+          cards: [],
+          activity, player,
+          splits: activity.stats[0][0]
+        };
+      }
+      if (type === "session") {
+        const list = T.loadSocial().sessions;
+        const index = Number(params.get("i"));
+        const raw = list[index];
+        if (!raw) return null;
+        const activity = T.loggedActivity(raw, index);
+        const sport = activity.sport;
+        return {
+          key: "session:" + index,
+          title: activity.title,
+          kicker: esc(me.name || "You") + " · " + esc(activity.when),
+          cover: T.photos[sport] || T.photos.Football,
+          initials: T.initials(me.name || "You"),
+          avatar: T.colorFor(me.name || "You"),
+          follow: "Kudos",
+          following: "Kudos given",
+          bio: activity.notes,
+          line: activity.title + " is on your feed.",
+          stats: activity.stats,
+          facts: [["Kind", "Training"], ["Pace", activity.pace], ["Avg heart rate", activity.avgHr + " bpm"], ["Max heart rate", activity.maxHr + " bpm"], ["Elevation", activity.elevationM + " m"], ["Effort", activity.effort + " / 10"], ["Sport", sport]],
+          peopleTitle: "Suggested athletes",
+          people: ranked(sport).slice(0, 3).map(personCard),
+          cardsTitle: "Back to you",
+          cards: [{ href: T.page("you", {}), title: me.name || "You", meta: "Your training", img: T.photos[sport] || T.photos.Football }],
+          activity
+        };
+      }
+      if (type === "you") {
+        const sportsFollowed = (me.sports && me.sports.length) ? me.sports : ["Football"];
+        const sport = sportsFollowed[0];
+        const mine = T.loadSocial().sessions.map((item, index) => T.loggedActivity(item, index));
+        const preset = T.personalTraining().map((item) => Object.assign({ preset: true }, item));
+        const report = T.reportOf(mine.concat(preset));
+        return {
+          key: "you:" + (me.email || "me"),
+          title: me.name || "You",
+          kicker: esc(me.role || "Fan") + " · " + esc(me.city || "Kampala"),
+          cover: T.photos[sport] || T.photos.Football,
+          initials: T.initials(me.name || "You"),
+          avatar: T.colorFor(me.name || "You"),
+          follow: "Edit sports",
+          following: "Edit sports",
+          hideFollow: true,
+          bio: "Your Timwork profile. You follow " + sportsFollowed.join(", ") + ". Log a session the way you would on a training app, and it shows on your feed.",
+          line: "Logged a session in " + (me.city || "Kampala") + ".",
+          stats: [[report.km, "km"], [report.time, "time"], [report.sessions, "sessions"], [report.comps, "comps"]],
+          facts: [["Email", me.email || ""], ["Role", me.role || "Fan"], ["Heard via", me.heard || "—"], ["Sports", sportsFollowed.join(", ")]],
+          peopleTitle: "Suggested athletes",
+          people: ranked(sport).slice(0, 4).map(personCard),
+          cardsTitle: "Your sports",
+          cards: sportsFollowed.map((name) => ({ href: sportHref(name), title: name, meta: "Open the sport", img: T.photos[name] || T.photos.Football })),
+          you: true,
+          weeks: T.weeks(me.name || "You"),
+          activities: mine.concat(preset)
+        };
+      }
+      if (type === "mine") {
+        const activity = T.personalTraining()[Number(params.get("i"))];
+        if (!activity) return null;
+        return {
+          key: "mine:" + activity.index,
+          title: activity.title,
+          kicker: esc(activity.kind) + " · " + esc(activity.date),
+          cover: T.photos.Football,
+          initials: T.initials(me.name || "You"),
+          avatar: T.colorFor(me.name || "You"),
+          follow: "Kudos",
+          following: "Kudos given",
+          bio: activity.notes,
+          line: activity.title + " is on your training log.",
+          stats: activity.stats,
+          facts: [["Kind", activity.kind], ["Pace", activity.pace], ["Avg heart rate", activity.avgHr + " bpm"], ["Max heart rate", activity.maxHr + " bpm"], ["Elevation", activity.elevationM + " m"], ["Effort", activity.effort + " / 10"]],
+          peopleTitle: "Suggested athletes",
+          people: ranked("Football").slice(0, 3).map(personCard),
+          cardsTitle: "Back to you",
+          cards: [{ href: T.page("you", {}), title: me.name || "You", meta: "Your training", img: T.photos.Football }],
+          activity
+        };
+      }
+      if (type === "place") {
+        const place = T.ads.find((ad) => ad.id === params.get("id"));
+        if (!place) return null;
+        const linked = { "nile-cafe": "ev-foot", entebbe: "ev-tennis2", "nile-source": "ev-swim", nakasero: "ev-foot" }[place.id];
+        const eventItem = T.events.find((item) => item.id === linked);
+        return {
+          key: "place:" + place.id,
+          title: place.brand,
+          kicker: "Partner · " + esc(place.place),
+          cover: place.img,
+          follow: "Follow",
+          following: "Following",
+          bio: place.detail + " " + place.line,
+          line: "Open during the match window in " + place.place + ".",
+          stats: [[place.place, "place"], ["Stamp", "on the trail"], ["Card", "this week"], ["UGX", "partner"]],
+          facts: [["Offer", place.line], ["Where", place.place]],
+          peopleTitle: "Nearby athletes",
+          people: eventItem ? ranked(eventItem.sport).slice(0, 4).map(personCard) : [],
+          cardsTitle: "Tied to",
+          cards: eventItem ? [eventCard(eventItem)] : []
+        };
+      }
+      return null;
+    }
+
+    function personCard(player) {
+      const board = ranked(player.sport);
+      const place = board.findIndex((item) => item.name === player.name) + 1;
+      return {
+        href: athleteHref(player),
+        name: player.name,
+        meta: "#" + place + " · " + player.position + " · " + player.club,
+        color: T.colorFor(player.name),
+        initials: T.initials(player.name)
+      };
+    }
+    function eventCard(item) {
+      return { href: T.page("event", { id: item.id }), title: item.title, meta: item.date + " · " + item.venue, img: T.eventPhoto(item) };
+    }
+
+    let view = build();
+    if (!view) {
+      document.getElementById("cover").style.background = "#0c3d2e";
+      app.innerHTML = "<div class=\"missing\"><h1>That page is not on the card.</h1><p><a class=\"btn btn-green\" href=\"timworksports.html\">Back to the card</a></p></div>";
+    } else {
+      document.title = view.title + " · Timwork Sports";
+      const cover = document.getElementById("cover");
+      cover.style.backgroundImage = "url('" + view.cover + "')";
+      paint();
+    }
+
+    function social() { return T.loadSocial(); }
+    function followers(key) {
+      let hash = 0;
+      for (const ch of key) hash = (hash * 33 + ch.charCodeAt(0)) | 0;
+      const base = 120 + Math.abs(hash) % 1800;
+      return base + (social().follows.includes(key) ? 1 : 0);
+    }
+    function feed(viewModel) {
+      const saved = social().posts[viewModel.key] || [];
+      const seeds = [
+        { id: viewModel.key + ":1", author: viewModel.title, text: viewModel.line, at: "2h", likes: 24 },
+        { id: viewModel.key + ":2", author: viewModel.title, text: "Kampala is loud this window. Pull up if you are on the card.", at: "1d", likes: 61 }
+      ];
+      return saved.concat(seeds);
+    }
+
+    function paint() {
+      const state = social();
+      const on = state.follows.includes(view.key);
+      const posts = feed(view);
+      const avatar = view.avatarImg
+        ? " style=\"background-image:url('" + view.avatarImg + "')\""
+        : " style=\"background:" + (view.avatar || "#0c3d2e") + "\"";
+      app.innerHTML = `
+        <section class="profile">
+          <div class="who">
+            <div class="avatar"${avatar}>${view.avatarImg ? "" : esc(view.initials || "")}</div>
+            <div>
+              <p class="kicker">${view.kicker}</p>
+              <h1>${esc(view.title)}</h1>
+            </div>
+            <div class="actions">
+              ${view.hideFollow ? `<a class="btn btn-green" href="#log">Log a session</a>` : `<button class="btn ${on ? "pill" : "btn-green"}" id="follow" type="button">${on ? esc(view.following) : esc(view.follow)}</button>`}
+              ${view.challenge ? `<button class="btn ${state.challenges.includes(view.key) ? "pill" : "btn-green"}" id="challenge" type="button">${state.challenges.includes(view.key) ? "Challenged" : "Challenge"}</button>` : ""}
+              <button class="pill" id="share" type="button">Share</button>
+            </div>
+          </div>
+          <p class="bio">${esc(view.bio)}</p>
+          <p class="note" id="shareNote"></p>
+          <div class="stats">
+            <article class="stat"><b>${(view.you ? state.follows.length : followers(view.key)).toLocaleString("en-US")}</b><span>${view.you ? "following" : "followers"}</span></article>
+            ${view.you ? "" : `<article class="stat"><b>${(40 + (T.hash(view.key) % 280)).toLocaleString("en-US")}</b><span>following</span></article>`}
+            ${view.stats.map(([value, label]) => `<article class="stat"><b>${esc(value)}</b><span>${esc(label)}</span></article>`).join("")}
+          </div>
+          ${view.merch ? `<form class="checkout" id="checkout">
+            <label>Size<select id="size">${view.merch.sizes.map((size) => `<option>${esc(size)}</option>`).join("")}</select></label>
+            <label>Full name<input id="shipName" required maxlength="80" value="${esc(me.name || "")}"></label>
+            <label>Phone<input id="shipPhone" required inputmode="tel" placeholder="07XX XXX XXX" maxlength="20"></label>
+            <label>City<input id="shipCity" required maxlength="40" value="${esc(me.city || "Kampala")}"></label>
+            <label>Delivery address<textarea id="shipAddress" required maxlength="160" placeholder="Street, area, and a landmark"></textarea></label>
+            <p class="bio" style="margin:0">Pay on delivery. Kampala orders arrive in 2–4 days. No card is taken here.</p>
+            <button class="btn btn-green" id="order" type="submit">Place order · ${esc(T.ugx(view.merch.price))}</button>
+            <button class="pill" id="bag" type="button">Add to bag</button>
+            <p class="note" id="bagNote"></p>
+          </form>` : ""}
+        </section>
+        <div class="layout">
+          <section class="card">
+            ${view.weeks ? `<h2>Last 12 weeks</h2><div class="weeks" aria-hidden="true">${view.weeks.map((height) => `<i style="height:${height}%"></i>`).join("")}</div>` : ""}
+            ${view.activities && view.activities.length ? `<h2 style="margin-top:16px">Activities</h2>${view.activities.map((item) => activityHtml(item)).join("")}` : ""}
+            ${view.you ? `<h2 id="log" style="margin-top:16px">Log a session</h2><form class="composer" id="sessionForm"><input name="title" required placeholder="Morning run" maxlength="80"><input name="distance" placeholder="Distance, e.g. 6.2 km"><input name="minutes" type="number" min="1" required placeholder="Minutes"><select name="sport">${(me.sports && me.sports.length ? me.sports : ["Football","Basketball","Tennis","Boxing","Swimming","Athletics"]).map((name) => `<option>${esc(name)}</option>`).join("")}</select><button class="btn btn-green" type="submit">Save session</button></form>` : ""}
+            <h2 style="margin-top:16px">Posts</h2>
+            <form class="composer" id="composer">
+              <textarea name="text" required maxlength="280" placeholder="Post as ${esc(me.name || "you")}"></textarea>
+              <button class="btn btn-green" type="submit">Post</button>
+            </form>
+            <div id="feed">${posts.map((post) => postHtml(post, state)).join("")}</div>
+            ${splitsHtml()}
+          </section>
+          <div>
+            <section class="card">
+              <h2>Details</h2>
+              <div class="facts">${view.facts.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join("")}</div>
+              ${bookHtml(state)}
+            </section>
+            ${view.records ? `<section class="card" style="margin-top:16px"><h2>Records</h2><div class="facts">${view.records.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join("")}</div></section>` : ""}
+            ${view.club ? `<section class="card" style="margin-top:16px"><h2>Club</h2><a class="person" href="${view.club.href}"><i style="background:#0c3d2e">${esc(T.initials(view.club.name))}</i><div><strong>${esc(view.club.name)}</strong><span>Open the club</span></div></a></section>` : ""}
+            ${view.people.length ? `<section class="card" style="margin-top:16px"><h2>${esc(view.peopleTitle)}</h2>${view.people.map(personHtml).join("")}</section>` : ""}
+            ${view.cards.length ? `<section class="card" style="margin-top:16px"><h2>${esc(view.cardsTitle)}</h2>${view.cards.map(cardHtml).join("")}</section>` : ""}
+          </div>
+        </div>
+        ${view.ticket ? `<div class="buybar"><div><b>${esc(T.ugx(view.ticket.price))}</b><span>${esc(view.ticket.date)} · ${esc(view.ticket.time)} · ${esc(view.ticket.venue)}</span><p class="note" id="holdNote"></p></div><button class="btn btn-green" id="hold" type="button">Get tickets</button></div>` : ""}`;
+      bind();
+    }
+
+    function personHtml(person) {
+      return `<a class="person" href="${person.href}"><i style="background:${person.color}">${esc(person.initials)}</i><div><strong>${esc(person.name)}</strong><span>${esc(person.meta)}</span></div></a>`;
+    }
+    function cardHtml(card) {
+      return `<a class="mini" href="${card.href}"><i style="background-image:url('${card.img}')"></i><div><strong>${esc(card.title)}</strong><span>${esc(card.meta)}</span></div></a>`;
+    }
+    function bookHtml(state) {
+      if (!view.book) return "";
+      const saved = state.bookings[view.book.name];
+      const days = T.bookDays.map((label, index) => `<button class="ghost" type="button" data-day="${index}">${esc(label)}</button>`).join("");
+      const times = T.bookTimes.map((label, index) => `<button class="ghost" type="button" data-time="${index}">${esc(label)}</button>`).join("");
+      return `<h2 style="margin-top:16px">Book a session</h2><div class="chips" id="days">${days}</div><div class="chips" id="times">${times}</div><button class="btn btn-green" id="bookBtn" type="button" style="margin-top:10px">${saved ? "Booked" : "Book"}</button><p class="note" id="bookNote">${saved ? esc(saved) : "Pick a day and a time."}</p>`;
+    }
+    function activityHtml(item) {
+      const href = item.who
+        ? T.page("activity", { sport: item.who.sport, name: item.who.name, i: String(item.index) })
+        : item.logged
+          ? T.page("session", { i: String(item.index) })
+          : item.preset
+            ? T.page("mine", { i: String(item.index) })
+            : (view.player ? T.page("activity", { sport: view.player.sport, name: view.player.name, i: String(item.index) }) : "");
+      const inner = `<b>${esc(item.title)}</b><span class="metrics">${item.stats.map(([value, label]) => `<span><strong>${esc(value)}</strong>${esc(label)}</span>`).join("")}</span>`;
+      return href && type !== "activity" ? `<a class="act" href="${href}">${inner}<span>${esc(item.when)}</span></a>` : `<div class="act">${inner}<span>${esc(item.when)}</span></div>`;
+    }
+    function splitsHtml() {
+      const activity = view.activity;
+      if (!activity) return "";
+      const zones = activity.avgHr ? `<h2 style="margin-top:16px">Heart rate</h2><div class="zone"><span>Easy</span><i style="width:46%"></i><b>46%</b></div><div class="zone"><span>Steady</span><i class="gold" style="width:34%"></i><b>34%</b></div><div class="zone"><span>Hard</span><i class="hard" style="width:20%"></i><b>20%</b></div>` : "";
+      if (!activity.splits) return zones;
+      const rows = activity.splits.map((split, index) => `<tr><td>Km ${index + 1}</td><td>${esc(split)}</td></tr>`).join("");
+      return zones + `<h2 style="margin-top:16px">Splits</h2><table class="splits">${rows}</table>`;
+    }
+    function postHtml(post, state) {
+      const liked = !!state.likes[post.id];
+      const count = post.likes + (liked ? 1 : 0);
+      const comments = state.comments[post.id] || [];
+      return `<article class="post"><time>${esc(post.at)}</time><strong>${esc(post.author)}</strong><p>${esc(post.text)}</p><div class="post-actions"><button class="ghost${liked ? " on" : ""}" type="button" data-like="${esc(post.id)}">${liked ? "Kudos given" : "Kudos"} · ${count}</button></div><ul class="comments">${comments.map((comment) => `<li><strong>${esc(comment.author)}</strong> ${esc(comment.text)}</li>`).join("")}</ul><form class="comment" data-for="${esc(post.id)}"><input name="text" required maxlength="180" placeholder="Comment" aria-label="Comment"><button class="ghost" type="submit">Reply</button></form></article>`;
+    }
+
+    function bind() {
+      const follow = document.getElementById("follow");
+      if (follow) follow.onclick = () => {
+        const state = social();
+        const index = state.follows.indexOf(view.key);
+        if (index >= 0) state.follows.splice(index, 1);
+        else state.follows.push(view.key);
+        T.saveSocial(state);
+        paint();
+      };
+      const challenge = document.getElementById("challenge");
+      if (challenge) challenge.onclick = () => {
+        const state = social();
+        const index = state.challenges.indexOf(view.key);
+        if (index >= 0) state.challenges.splice(index, 1);
+        else state.challenges.push(view.key);
+        T.saveSocial(state);
+        paint();
+      };
+      const bookBtn = document.getElementById("bookBtn");
+      if (bookBtn && view.book) {
+        let day = 1;
+        let time = 1;
+        const mark = () => {
+          document.querySelectorAll("[data-day]").forEach((button) => button.classList.toggle("on", Number(button.dataset.day) === day));
+          document.querySelectorAll("[data-time]").forEach((button) => {
+            const open = T.slotOpen(view.book, day, Number(button.dataset.time));
+            button.disabled = !open;
+            button.classList.toggle("on", Number(button.dataset.time) === time);
+          });
+        };
+        document.getElementById("days").onclick = (event) => {
+          const button = event.target.closest("[data-day]");
+          if (!button) return;
+          day = Number(button.dataset.day);
+          mark();
+        };
+        document.getElementById("times").onclick = (event) => {
+          const button = event.target.closest("[data-time]");
+          if (!button || button.disabled) return;
+          time = Number(button.dataset.time);
+          mark();
+        };
+        mark();
+        bookBtn.onclick = () => {
+          const state = social();
+          const label = T.bookDays[day] + " · " + T.bookTimes[time];
+          state.bookings[view.book.name] = label;
+          T.saveSocial(state);
+          bookBtn.textContent = "Booked";
+          document.getElementById("bookNote").textContent = "Booked " + label + " with " + view.book.name + ".";
+        };
+      }
+      document.getElementById("share").onclick = async () => {
+        const note = document.getElementById("shareNote");
+        try {
+          await navigator.clipboard.writeText(location.href);
+          note.textContent = "Link copied.";
+        } catch (error) {
+          note.textContent = location.href;
+        }
+      };
+      document.getElementById("composer").onsubmit = (event) => {
+        event.preventDefault();
+        const text = event.target.text.value.trim();
+        if (!text) return;
+        const state = social();
+        const list = state.posts[view.key] || [];
+        list.unshift({ id: view.key + ":" + Date.now(), author: me.name || "You", text, at: "Just now", likes: 0 });
+        state.posts[view.key] = list;
+        T.saveSocial(state);
+        paint();
+      };
+      const feedEl = document.getElementById("feed");
+      feedEl.onclick = (event) => {
+        const button = event.target.closest("[data-like]");
+        if (!button) return;
+        const state = social();
+        if (state.likes[button.dataset.like]) delete state.likes[button.dataset.like];
+        else state.likes[button.dataset.like] = true;
+        T.saveSocial(state);
+        paint();
+      };
+      feedEl.onsubmit = (event) => {
+        const form = event.target.closest("form.comment");
+        if (!form) return;
+        event.preventDefault();
+        const text = form.text.value.trim();
+        if (!text) return;
+        const state = social();
+        const list = state.comments[form.dataset.for] || [];
+        list.push({ author: me.name || "You", text, at: "Just now" });
+        state.comments[form.dataset.for] = list;
+        T.saveSocial(state);
+        paint();
+      };
+      const sessionForm = document.getElementById("sessionForm");
+      if (sessionForm) sessionForm.onsubmit = (event) => {
+        event.preventDefault();
+        const state = social();
+        state.sessions.unshift({
+          title: event.target.title.value.trim(),
+          distance: event.target.distance.value.trim() || "—",
+          minutes: Number(event.target.minutes.value),
+          sport: event.target.sport.value,
+          at: "Just now",
+          kudos: 0
+        });
+        T.saveSocial(state);
+        view = build();
+        paint();
+      };
+      const hold = document.getElementById("hold");
+      if (hold) hold.onclick = () => {
+        document.getElementById("holdNote").textContent = "Ticket held for " + (me.name || "you") + " · " + T.ugx(view.ticket.price) + " · " + view.ticket.venue + ".";
+      };
+      const bagBtn = document.getElementById("bag");
+      if (bagBtn) bagBtn.onclick = () => {
+        const size = document.getElementById("size").value;
+        const bag = T.loadBag();
+        const existing = bag.find((item) => item.id === view.merch.id && item.size === size);
+        if (existing) existing.qty += 1;
+        else bag.push({ id: view.merch.id, name: view.merch.name, size, price: view.merch.price, qty: 1 });
+        T.saveBag(bag);
+        document.getElementById("bagNote").textContent = view.merch.name + " · " + size + " is in the bag.";
+      };
+      const checkout = document.getElementById("checkout");
+      if (checkout) checkout.onsubmit = (event) => {
+        event.preventDefault();
+        const note = document.getElementById("bagNote");
+        const size = document.getElementById("size").value;
+        const shipName = document.getElementById("shipName").value.trim();
+        const phone = document.getElementById("shipPhone").value.trim();
+        const city = document.getElementById("shipCity").value.trim();
+        const address = document.getElementById("shipAddress").value.trim();
+        const digits = phone.replace(/\D/g, "");
+        if (shipName.length < 2 || digits.length < 9 || city.length < 2 || address.length < 5) {
+          note.textContent = "Add your name, a phone number, city, and delivery address.";
+          return;
+        }
+        const state = social();
+        const ref = "TW-" + String(view.merch.id.replace(/\D/g, "")).padStart(4, "0");
+        state.orders.push({ id: view.merch.id, name: view.merch.name, size, ref, shipName, phone, city, address });
+        T.saveSocial(state);
+        document.getElementById("order").textContent = "Order placed";
+        note.textContent = ref + " · " + size + " · " + shipName + " · " + phone + " · " + address + ", " + city + ". Delivery in 2–4 days. Pay on delivery.";
+      };
+    }
+
+    document.getElementById("logout").onclick = () => {
+      localStorage.removeItem("timwork_session");
+      location.href = "index.html";
+    };
+  </script>
+</body>
+</html>
