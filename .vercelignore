@@ -1,0 +1,8 @@
+.git
+.vercel
+swift/.derivedData
+kotlin/app/build
+kotlin/.gradle
+**/.gradle
+**/.idea
+local.properties
